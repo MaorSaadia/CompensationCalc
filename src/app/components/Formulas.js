@@ -1,5 +1,5 @@
 import React from "react";
-import { firstFormula, seniority } from "./Functions";
+import { mainFunction, firstFormula, seniority, calcAge } from "./Functions";
 
 const Formulas = ({ data }) => {
   data.forEach((row) => {
@@ -9,9 +9,9 @@ const Formulas = ({ data }) => {
       gender: row["מין"],
       birthDate: row["תאריך לידה"],
       startDate: row["תאריך תחילת עבודה"],
-      salary: row["שכר"],
+      salary: parseFloat(row["שכר"].replace(/,/g, "")),
       section14Date: row["תאריך קבלת סעיף 14"],
-      section14Rate: row["אחוז סעיף 14"],
+      section14Rate: (row["אחוז סעיף 14"] ?? 0) / 100,
       propertyValue: row["שווי נכס"],
       leavingReason: row["סיבת עזיבה"],
       check: row["השלמה בצ'ק"],
@@ -20,9 +20,7 @@ const Formulas = ({ data }) => {
       deposits: row["הפקדות"],
     };
 
-    const seniority1 = seniority(person.startDate, person.leaveDate);
-    const result = firstFormula(person.salary, seniority1);
-    console.log(result);
+    console.log(calcAge(person.birthDate));
   });
 };
 

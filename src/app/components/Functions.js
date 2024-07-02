@@ -1,3 +1,5 @@
+import { femaleDeath, maleDeath } from "../data/death";
+
 export function getYearFromDate(dateString) {
   const date = new Date(dateString);
   return date.getFullYear();
@@ -18,8 +20,13 @@ export function firstFormula(salary, seniority, section14Rate) {
   return salary * seniority * (1 - section14Rate);
 }
 
-export function probabilityToKeepWork(age) {
-  // if(age )
+export function probabilityToKeepWork(age, gender) {
+  return (
+    1 -
+    (probabilityToResign(age) +
+      probabilityToFired(age) +
+      probabilityToDie(age, gender))
+  );
 }
 
 export function probabilityToResign(age) {
@@ -38,8 +45,15 @@ export function probabilityToFired(age) {
   if (age >= 60 && age <= 67) return 0.02;
 }
 
-export function probabilityToDie(age) {
-  // if(age )
+export function probabilityToDie(age, gender) {
+  console.log(age, gender);
+  if (gender === "M") {
+    const entry = maleDeath.find((item) => item.age === age);
+    return entry ? entry.qx : null;
+  } else {
+    const entry = femaleDeath.find((item) => item.age === age);
+    return entry ? entry.qx : null;
+  }
 }
 
 export function lineOne(person) {
@@ -51,6 +65,6 @@ export function lineOne(person) {
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
   for (t = 0; w - x - 2; t++) {
-    // sum += (firstFormula(person.salary,sen, person.section14Rate) * ((1 + 0.04)**(t+0.5)) * /);
+    // sum += (firstFormula(person.salary,sen, person.section14Rate) * ((1 + 0.04)**(t+0.5)) * probabilityToKeepWork(x,person.gender) * probabilityToFired(x)/(1+));
   }
 }

@@ -1,5 +1,11 @@
 import React from "react";
-import { mainFunction, firstFormula, seniority, calcAge } from "./Functions";
+import {
+  mainFunction,
+  firstFormula,
+  seniority,
+  calcAge,
+  probabilityToDie,
+} from "./Functions";
 
 const Formulas = ({ data }) => {
   data.forEach((row) => {
@@ -20,7 +26,7 @@ const Formulas = ({ data }) => {
       deposits: row["הפקדות"],
     };
 
-    console.log(calcAge(person.birthDate));
+    console.log(probabilityToDie(calcAge(person.birthDate), person.gender));
   });
 };
 

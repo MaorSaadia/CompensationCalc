@@ -53,13 +53,12 @@ const ExcelReader = () => {
     reader.readAsArrayBuffer(file);
   };
 
-  const printAllValues = () => {
-    data.forEach((row) => {
-      console.log(row["שם"]);
-    });
-  };
-  printAllValues();
-
+  // const printAllValues = () => {
+  //   data.forEach((row) => {
+  //     console.log(row["שם"]);
+  //   });
+  // };
+  // printAllValues();
   return (
     <div className="flex flex-col items-center py-10">
       <input

@@ -1,24 +1,32 @@
 import React from "react";
+import { firstFormula, func, seniority } from "./Functions";
 
 const Formulas = ({ data }) => {
-  const startwork = data[3]?.["תאריך תחילת עבודה"];
-  const leave = data[3]?.["תאריך עזיבה"];
+  let person = {};
+  data.forEach((row) => {
+    person = {
+      firstName: row["שם"],
+      lastName: row["שם משפחה"],
+      gender: row["מין"],
+      birthDate: row["תאריך לידה"],
+      startDate: row["תאריך תחילת עבודה"],
+      salary: row["שכר"],
+      section14Date: row["תאריך קבלת סעיף 14"],
+      section14Rate: row["אחוז סעיף 14"],
+      propertyValue: row["שווי נכס"],
+      leavingReason: row["סיבת עזיבה"],
+      check: row["השלמה בצ'ק"],
+      propertyPayment: row["תשלום מהנכס"],
+      leaveDate: row["תאריך עזיבה"],
+      deposits: row["הפקדות"],
+    };
 
-  const getYearFromDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.getFullYear();
-  };
+    // const seniority1 = seniority(person.startDate, person.leaveDate);
+    // // console.log(seniority1);
+    // console.log(firstFormula(person.salary, seniority1));
 
-  const startYear = startwork ? getYearFromDate(startwork) : null;
-  const leaveYear = leave ? getYearFromDate(leave) : null;
-
-  const yearDifference = startYear && leaveYear ? leaveYear - startYear : null;
-
-  console.log(`Start Year: ${startYear}`);
-  console.log(`Leave Year: ${leaveYear}`);
-  console.log(`Year Difference: ${yearDifference}`);
-
-  return <div>{`Year Difference: ${yearDifference}`}</div>;
+    console.log(func(person));
+  });
 };
 
 export default Formulas;

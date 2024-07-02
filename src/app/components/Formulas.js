@@ -1,10 +1,9 @@
 import React from "react";
-import { firstFormula, func, seniority } from "./Functions";
+import { firstFormula, seniority } from "./Functions";
 
 const Formulas = ({ data }) => {
-  let person = {};
   data.forEach((row) => {
-    person = {
+    const person = {
       firstName: row["שם"],
       lastName: row["שם משפחה"],
       gender: row["מין"],
@@ -21,11 +20,9 @@ const Formulas = ({ data }) => {
       deposits: row["הפקדות"],
     };
 
-    // const seniority1 = seniority(person.startDate, person.leaveDate);
-    // // console.log(seniority1);
-    // console.log(firstFormula(person.salary, seniority1));
-
-    console.log(func(person));
+    const seniority1 = seniority(person.startDate, person.leaveDate);
+    const result = firstFormula(person.salary, seniority1);
+    console.log(result);
   });
 };
 

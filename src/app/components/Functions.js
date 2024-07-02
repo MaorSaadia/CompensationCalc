@@ -5,18 +5,13 @@ export function getYearFromDate(dateString) {
 
 export function seniority(startDate, leaveDate) {
   const startYear = getYearFromDate(startDate);
-  const leaveYear = leaveDate ? getYearFromDate(leaveDate) : "2023";
+  const leaveYear = leaveDate ? getYearFromDate(leaveDate) : 2023;
 
-  return leaveYear - startYear;
+  return Number(leaveYear - startYear);
 }
 
 export function firstFormula(salary, seniority) {
-  return salary * seniority;
-}
-
-export function func(person) {
-  return firstFormula(
-    person.salary,
-    seniority(person.startDate, person.leaveDate)
-  );
+  // Remove commas from the salary string and convert it to a number
+  const numericSalary = parseFloat(salary.replace(/,/g, ""));
+  return numericSalary * seniority;
 }

@@ -1,4 +1,5 @@
 import { femaleDeath, maleDeath } from "../data/death";
+import { discountRate1 } from "../data/discountRate";
 
 export function getYearFromDate(dateString) {
   const date = new Date(dateString);
@@ -46,7 +47,7 @@ export function probabilityToFired(age) {
 }
 
 export function probabilityToDie(age, gender) {
-  console.log(age, gender);
+  // console.log(age, gender);
   if (gender === "M") {
     const entry = maleDeath.find((item) => item.age === age);
     return entry ? entry.qx : null;
@@ -56,15 +57,25 @@ export function probabilityToDie(age, gender) {
   }
 }
 
+export function discountRate(year) {
+  const entry = discountRate1.find((item) => item.year === year);
+  return entry ? entry.discountRate : null;
+}
 export function lineOne(person) {
-  //   const seniority1 = seniority(person.startDate, person.leaveDate);
-  //   return firstFormula(person.salary, seniority1, person.section14Rate);
-
   let sum = 0;
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
-  for (t = 0; w - x - 2; t++) {
-    // sum += (firstFormula(person.salary,sen, person.section14Rate) * ((1 + 0.04)**(t+0.5)) * probabilityToKeepWork(x,person.gender) * probabilityToFired(x)/(1+));
+  console.log("w ", w);
+  console.log("x ", x);
+  console.log("sen ", sen);
+  for (let t = 0; t <= w - x - 2; t++) {
+    sum +=
+      (firstFormula(person.salary, sen, person.section14Rate) *
+        (1 + 0.04) ** (t + 0.5) *
+        probabilityToKeepWork(x, person.gender) *
+        probabilityToFired(x)) /
+      (1 + discountRate(t + 1)) ** (t + 0.5);
   }
+  return sum;
 }

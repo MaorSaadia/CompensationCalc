@@ -53,12 +53,6 @@ const ExcelReader = () => {
     reader.readAsArrayBuffer(file);
   };
 
-  // const printAllValues = () => {
-  //   data.forEach((row) => {
-  //     console.log(row["שם"]);
-  //   });
-  // };
-  // printAllValues();
   return (
     <div className="flex flex-col items-center py-10">
       <input
@@ -68,7 +62,7 @@ const ExcelReader = () => {
         className="mb-4 p-2 border rounded-lg shadow-sm cursor-pointer"
       />
       <Formulas data={data} />
-      <div className="w-full max-w-6xl overflow-x-auto">
+      {/* <div className="w-full max-w-6xl overflow-x-auto">
         <h3 className="text-xl font-semibold mb-4">Data from Excel file:</h3>
         {data.length > 0 ? (
           <table className="min-w-full bg-white border rounded-lg shadow-sm">
@@ -99,7 +93,7 @@ const ExcelReader = () => {
         ) : (
           <p>Add Excel File.</p>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

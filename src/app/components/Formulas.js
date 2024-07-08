@@ -1,6 +1,7 @@
 import React from "react";
 import {
   calcAge,
+  lineFive,
   lineFour1,
   lineFour2,
   lineOne,
@@ -45,6 +46,7 @@ const Formulas = ({ data }) => {
             const fourConnected = Number(lineThree(person));
             const fiveConnected = Number(lineFour1(person));
             const sixConnected = Number(lineFour2(person));
+            const sevenConnected = Number(lineFive(person));
 
             const result =
               firstConnected +
@@ -52,7 +54,8 @@ const Formulas = ({ data }) => {
               thirdConnected +
               fourConnected +
               fiveConnected +
-              sixConnected;
+              sixConnected +
+              sevenConnected;
             return (
               <tr
                 key={index}

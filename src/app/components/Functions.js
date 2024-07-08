@@ -77,7 +77,7 @@ export function lineOne(person) {
         (1 + SALARY_GROWTH_RATE) ** (t + 0.5) *
         probabilityToKeepWork(x + t + 1, person.gender) *
         probabilityToFired(x + t + 1)) /
-      (1 + discountRate(t + 1)) ** (t + 0.5);
+      (1 + discountRate(t)) ** (t + 0.5);
   }
   return sum;
 }
@@ -92,7 +92,7 @@ export function lineTwo1(person) {
       (firstFormula(person.salary, sen, person.section14Rate) *
         (1 + SALARY_GROWTH_RATE) ** (t + 0.5) *
         probabilityToKeepWork(x + t + 1, person.gender) *
-        probabilityToDie(x + t + 1)) /
+        probabilityToDie(x + t + 1, person.gender)) /
       (1 + discountRate(t + 1)) ** (t + 0.5);
   }
   return sum;
@@ -132,10 +132,10 @@ export function lineFour1(person) {
   const sen = seniority(person.startDate, person.leaveDate);
   sum +=
     (firstFormula(person.salary, sen, person.section14Rate) *
-      (1 + SALARY_GROWTH_RATE) ** (w - x + 0.5) *
+      (1 + SALARY_GROWTH_RATE) ** (w - x - 1 + 0.5) *
       probabilityToKeepWork(w - x - 1, person.gender) *
-      probabilityToDie(w - 1)) /
-    (1 + discountRate(w - x)) ** (w - x + 0.5);
+      probabilityToDie(w - 1, person.gender)) /
+    (1 + discountRate(w - x)) ** (w - x - 1 + 0.5);
   return sum;
 }
 
@@ -143,11 +143,27 @@ export function lineFour2(person) {
   let sum = 0;
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
-  const sen = seniority(person.startDate, person.leaveDate);
   sum +=
     person.assetsValue *
     probabilityToKeepWork(w - x - 1) *
     probabilityToResign(w - 1);
+  return sum;
+}
+
+export function lineFive(person) {
+  let sum = 0;
+  const w = person.gender === "M" ? 67 : 64;
+  const x = calcAge(person.birthDate);
+  const sen = seniority(person.startDate, person.leaveDate);
+  sum +=
+    (firstFormula(person.salary, sen, person.section14Rate) *
+      (1 + SALARY_GROWTH_RATE) ** (w - x) *
+      probabilityToKeepWork(w - x - 1, person.gender) *
+      (1 -
+        probabilityToFired(w - 1) -
+        probabilityToResign(w - 1) -
+        probabilityToDie(w - 1, person.gender))) /
+    (1 + discountRate(w - x)) ** (w - x);
   return sum;
 }
 

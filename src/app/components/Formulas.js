@@ -1,11 +1,12 @@
 import React from "react";
 import {
-  mainFunction,
-  firstFormula,
-  seniority,
   calcAge,
-  probabilityToDie,
+  lineFour1,
+  lineFour2,
   lineOne,
+  lineThree,
+  lineTwo1,
+  lineTwo2,
 } from "./Functions";
 
 const Formulas = ({ data }) => {
@@ -31,21 +32,34 @@ const Formulas = ({ data }) => {
               salary: parseFloat(row["שכר"].replace(/,/g, "")),
               section14Date: row["תאריך קבלת סעיף 14"],
               section14Rate: (row["אחוז סעיף 14"] ?? 0) / 100,
-              propertyValue: row["שווי נכס"],
+              assetsValue: parseFloat(row["שווי נכס"].replace(/,/g, "")) ?? 0,
               leavingReason: row["סיבת עזיבה"],
               check: row["השלמה בצ'ק"],
-              propertyPayment: row["תשלום מהנכס"],
+              assetsPayment: row["תשלום מהנכס"],
               leaveDate: row["תאריך עזיבה"],
               deposits: row["הפקדות"],
             };
+            const firstConnected = Number(lineOne(person));
+            const secondConnected = Number(lineTwo1(person));
+            const thirdConnected = Number(lineTwo2(person));
+            const fourConnected = Number(lineThree(person));
+            const fiveConnected = Number(lineFour1(person));
+            const sixConnected = Number(lineFour2(person));
 
+            const result =
+              firstConnected +
+              secondConnected +
+              thirdConnected +
+              fourConnected +
+              fiveConnected +
+              sixConnected;
             return (
               <tr
                 key={index}
                 className="border-b border-gray-200 hover:bg-gray-100"
               >
                 <td className="py-3 px-6 text-center whitespace-nowrap">
-                  {lineOne(person).toFixed(2)}₪
+                  {result.toFixed(2)}₪
                 </td>
                 <td className="py-3 px-6 text-center whitespace-nowrap">
                   {calcAge(person.birthDate)}
@@ -78,10 +92,10 @@ const Formulas = ({ data }) => {
 //       salary: parseFloat(firstPerson["שכר"].replace(/,/g, "")),
 //       section14Date: firstPerson["תאריך קבלת סעיף 14"],
 //       section14Rate: (firstPerson["אחוז סעיף 14"] ?? 0) / 100,
-//       propertyValue: firstPerson["שווי נכס"],
+//       assetsValue: firstPerson["שווי נכס"],
 //       leavingReason: firstPerson["סיבת עזיבה"],
 //       check: firstPerson["השלמה בצ'ק"],
-//       propertyPayment: firstPerson["תשלום מהנכס"],
+//       assetsPayment: firstPerson["תשלום מהנכס"],
 //       leaveDate: firstPerson["תאריך עזיבה"],
 //       deposits: firstPerson["הפקדות"],
 //     };

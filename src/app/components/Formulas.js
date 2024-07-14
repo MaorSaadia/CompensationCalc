@@ -33,7 +33,7 @@ const Formulas = ({ data }) => {
               salary: parseFloat(row["שכר"].replace(/,/g, "")),
               section14Date: row["תאריך קבלת סעיף 14"],
               section14Rate: (row["אחוז סעיף 14"] ?? 0) / 100,
-              assetsValue: parseFloat(row["שווי נכס"].replace(/,/g, "")) ?? 0,
+              assetsValue: parseFloat(row["שווי נכס"]?.replace(/,/g, "")) ?? 0,
               leavingReason: row["סיבת עזיבה"],
               check: row["השלמה בצ'ק"],
               assetsPayment: row["תשלום מהנכס"],

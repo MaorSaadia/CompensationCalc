@@ -4,8 +4,13 @@ import { discountRate1 } from "../data/discountRate";
 const SALARY_GROWTH_RATE = 0.03;
 
 export function getYearFromDate(dateString) {
-  const date = new Date(dateString);
-  return date.getFullYear();
+  const dateParts = dateString.split("/");
+  let year = parseInt(dateParts[2], 10);
+
+  if (year < 100) {
+    year += year < 50 ? 2000 : 1900;
+  }
+  return year;
 }
 
 export function calcAge(birthDate) {
@@ -77,7 +82,7 @@ export function lineOne(person) {
         (1 + SALARY_GROWTH_RATE) ** (t + 0.5) *
         probabilityToKeepWork(x + t + 1, person.gender) *
         probabilityToFired(x + t + 1)) /
-      (1 + discountRate(t)) ** (t + 0.5);
+      (1 + discountRate(t + 1)) ** (t + 0.5);
   }
   return sum;
 }
@@ -145,7 +150,7 @@ export function lineFour2(person) {
   const x = calcAge(person.birthDate);
   sum +=
     person.assetsValue *
-    probabilityToKeepWork(w - x - 1) *
+    probabilityToKeepWork(w - x - 1, person.gender) *
     probabilityToResign(w - 1);
   return sum;
 }
@@ -155,6 +160,20 @@ export function lineFive(person) {
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
+
+  // console.log("w ", w);
+  // console.log("x ", x);
+  // console.log("sen ", sen);
+  // console.log(
+  //   "firstFormula ",
+  //   firstFormula(person.salary, sen, person.section14Rate)
+  // );
+  // console.log(SALARY_GROWTH_RATE);
+  // console.log(probabilityToResign(w - 1));
+  // console.log(probabilityToFired(w - 1));
+  // console.log(probabilityToDie(w - 1, person.gender));
+  // console.log(probabilityToKeepWork(w - 1, person.gender));
+
   sum +=
     (firstFormula(person.salary, sen, person.section14Rate) *
       (1 + SALARY_GROWTH_RATE) ** (w - x) *
@@ -166,29 +185,3 @@ export function lineFive(person) {
     (1 + discountRate(w - x)) ** (w - x);
   return sum;
 }
-
-// export function lineOne(person) {
-//   let sum = 0;
-//   const w = person.gender === "M" ? 67 : 64;
-//   const x = calcAge(person.birthDate);
-//   const sen = seniority(person.startDate, person.leaveDate);
-//   console.log("w ", w);
-//   console.log("x ", x);
-//   console.log("sen ", sen);
-//   // let t = 0;
-//   console.log(person.salary);
-//   console.log(person.section14Rate);
-//   console.log(firstFormula(person.salary, sen, person.section14Rate));
-//   console.log(probabilityToKeepWork(x, person.gender));
-//   console.log(probabilityToFired(x));
-//   console.log(discountRate(1));
-//   for (let t = 0; t <= w - x - 2; t++) {
-//     sum +=
-//       (firstFormula(person.salary, sen, person.section14Rate) *
-//         (1 + 0.04) ** (t + 0.5) *
-//         probabilityToKeepWork(x, person.gender) *
-//         probabilityToFired(x)) /
-//       (1 + discountRate(t + 1)) ** (t + 0.5);
-//   }
-//   return sum;
-// }

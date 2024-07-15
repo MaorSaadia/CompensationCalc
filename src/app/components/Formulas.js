@@ -84,7 +84,7 @@ const Formulas = ({ data }) => {
 
 // const Formulas = ({ data }) => {
 //   if (data.length > 0) {
-//     const firstPerson = data[15]; // Selecting the first person from the data array
+//     const firstPerson = data[1]; // Selecting the first person from the data array
 
 //     const person = {
 //       firstName: firstPerson["שם"],
@@ -102,8 +102,25 @@ const Formulas = ({ data }) => {
 //       leaveDate: firstPerson["תאריך עזיבה"],
 //       deposits: firstPerson["הפקדות"],
 //     };
+
+//     const firstConnected = Number(lineOne(person));
+//     const secondConnected = Number(lineTwo1(person));
+//     const thirdConnected = Number(lineTwo2(person));
+//     const fourConnected = Number(lineThree(person));
+//     const fiveConnected = Number(lineFour1(person));
+//     const sixConnected = Number(lineFour2(person));
+//     const sevenConnected = Number(lineFive(person));
+
+//     const result =
+//       firstConnected +
+//       secondConnected +
+//       thirdConnected +
+//       fourConnected +
+//       fiveConnected +
+//       sixConnected +
+//       sevenConnected;
 //     console.log(person.lastName);
-//     console.log("sum: ", lineOne(person).toFixed(2)); // Printing the details of the first person
+//     console.log("sum: ", result.toFixed(2));
 //   }
 // };
 

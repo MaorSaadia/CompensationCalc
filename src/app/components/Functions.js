@@ -8,7 +8,7 @@ export function getYearFromDate(dateString) {
   let year = parseInt(dateParts[2], 10);
 
   if (year < 100) {
-    year += year < 50 ? 2000 : 1900;
+    year += year < 40 ? 2000 : 1900;
   }
   return year;
 }
@@ -73,30 +73,41 @@ export function discountRate(year) {
 
 export function lineOne(person) {
   let sum = 0;
+  let probabilityCalc = 1;
+
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
+
   for (let t = 0; t <= w - x - 2; t++) {
+    const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
+    probabilityCalc *= currentProbability;
     sum +=
       (firstFormula(person.salary, sen, person.section14Rate) *
         (1 + SALARY_GROWTH_RATE) ** (t + 0.5) *
-        probabilityToKeepWork(x + t + 1, person.gender) *
+        probabilityCalc *
         probabilityToFired(x + t + 1)) /
       (1 + discountRate(t + 1)) ** (t + 0.5);
   }
+  console.log(probabilityCalc);
   return sum;
 }
 
 export function lineTwo1(person) {
   let sum = 0;
+  let probabilityCalc = 1;
+
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
+
   for (let t = 0; t <= w - x - 2; t++) {
+    const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
+    probabilityCalc *= currentProbability;
     sum +=
       (firstFormula(person.salary, sen, person.section14Rate) *
         (1 + SALARY_GROWTH_RATE) ** (t + 0.5) *
-        probabilityToKeepWork(x + t + 1, person.gender) *
+        probabilityCalc *
         probabilityToDie(x + t + 1, person.gender)) /
       (1 + discountRate(t + 1)) ** (t + 0.5);
   }
@@ -105,26 +116,36 @@ export function lineTwo1(person) {
 
 export function lineTwo2(person) {
   let sum = 0;
+  let probabilityCalc = 1;
+
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
+
   for (let t = 0; t <= w - x - 2; t++) {
+    const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
+    probabilityCalc *= currentProbability;
     sum +=
-      person.assetsValue *
-      probabilityToKeepWork(x + t + 1, person.gender) *
-      probabilityToResign(x + t + 1);
+      person.assetsValue * probabilityCalc * probabilityToResign(x + t + 1);
   }
   return sum;
 }
 
 export function lineThree(person) {
   let sum = 0;
+  let probabilityCalc = 1;
+
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
+
+  for (let t = 0; t <= w - 1; t++) {
+    const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
+    probabilityCalc *= currentProbability;
+  }
   sum +=
     (firstFormula(person.salary, sen, person.section14Rate) *
       (1 + SALARY_GROWTH_RATE) ** (w - x + 0.5) *
-      probabilityToKeepWork(w - x - 1, person.gender) *
+      probabilityCalc *
       probabilityToFired(w - 1)) /
     (1 + discountRate(w - x)) ** (w - x + 0.5);
   return sum;
@@ -132,13 +153,20 @@ export function lineThree(person) {
 
 export function lineFour1(person) {
   let sum = 0;
+  let probabilityCalc = 1;
+
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
+
+  for (let t = 0; t <= w - 1; t++) {
+    const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
+    probabilityCalc *= currentProbability;
+  }
   sum +=
     (firstFormula(person.salary, sen, person.section14Rate) *
       (1 + SALARY_GROWTH_RATE) ** (w - x - 1 + 0.5) *
-      probabilityToKeepWork(w - x - 1, person.gender) *
+      probabilityCalc *
       probabilityToDie(w - 1, person.gender)) /
     (1 + discountRate(w - x)) ** (w - x - 1 + 0.5);
   return sum;
@@ -146,11 +174,18 @@ export function lineFour1(person) {
 
 export function lineFour2(person) {
   let sum = 0;
+  let probabilityCalc = 1;
+
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
+
+  for (let t = 0; t <= w - 1; t++) {
+    const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
+    probabilityCalc *= currentProbability;
+  }
   sum +=
     person.assetsValue *
-    probabilityToKeepWork(w - x - 1, person.gender) *
+    probabilityToKeepWork(x + w - x - 1, person.gender) *
     probabilityToResign(w - 1);
   return sum;
 }
@@ -160,24 +195,10 @@ export function lineFive(person) {
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
-
-  // console.log("w ", w);
-  // console.log("x ", x);
-  // console.log("sen ", sen);
-  // console.log(
-  //   "firstFormula ",
-  //   firstFormula(person.salary, sen, person.section14Rate)
-  // );
-  // console.log(SALARY_GROWTH_RATE);
-  // console.log(probabilityToResign(w - 1));
-  // console.log(probabilityToFired(w - 1));
-  // console.log(probabilityToDie(w - 1, person.gender));
-  // console.log(probabilityToKeepWork(w - 1, person.gender));
-
   sum +=
     (firstFormula(person.salary, sen, person.section14Rate) *
       (1 + SALARY_GROWTH_RATE) ** (w - x) *
-      probabilityToKeepWork(w - x - 1, person.gender) *
+      probabilityToKeepWork(x + w - x - 1, person.gender) *
       (1 -
         probabilityToFired(w - 1) -
         probabilityToResign(w - 1) -

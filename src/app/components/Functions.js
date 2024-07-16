@@ -78,7 +78,6 @@ export function lineOne(person) {
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
-
   for (let t = 0; t <= w - x - 2; t++) {
     const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
     probabilityCalc *= currentProbability;
@@ -89,7 +88,6 @@ export function lineOne(person) {
         probabilityToFired(x + t + 1)) /
       (1 + discountRate(t + 1)) ** (t + 0.5);
   }
-  console.log(probabilityCalc);
   return sum;
 }
 
@@ -138,8 +136,8 @@ export function lineThree(person) {
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
 
-  for (let t = 0; t <= w - 1; t++) {
-    const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
+  for (let t = x; t <= x + w - x - 1; t++) {
+    const currentProbability = probabilityToKeepWork(t, person.gender);
     probabilityCalc *= currentProbability;
   }
   sum +=
@@ -159,8 +157,8 @@ export function lineFour1(person) {
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
 
-  for (let t = 0; t <= w - 1; t++) {
-    const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
+  for (let t = x; t <= x + w - x - 1; t++) {
+    const currentProbability = probabilityToKeepWork(t, person.gender);
     probabilityCalc *= currentProbability;
   }
   sum +=
@@ -179,14 +177,11 @@ export function lineFour2(person) {
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
 
-  for (let t = 0; t <= w - 1; t++) {
-    const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
+  for (let t = x; t <= x + w - x - 1; t++) {
+    const currentProbability = probabilityToKeepWork(t, person.gender);
     probabilityCalc *= currentProbability;
   }
-  sum +=
-    person.assetsValue *
-    probabilityToKeepWork(x + w - x - 1, person.gender) *
-    probabilityToResign(w - 1);
+  sum += person.assetsValue * probabilityCalc * probabilityToResign(w - 1);
   return sum;
 }
 

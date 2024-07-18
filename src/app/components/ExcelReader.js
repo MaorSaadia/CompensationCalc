@@ -62,38 +62,6 @@ const ExcelReader = () => {
         className="mb-4 p-2 border rounded-lg shadow-sm cursor-pointer"
       />
       <Formulas data={data} />
-      {/* <div className="w-full max-w-6xl overflow-x-auto">
-        <h3 className="text-xl font-semibold mb-4">Data from Excel file:</h3>
-        {data.length > 0 ? (
-          <table className="min-w-full bg-white border rounded-lg shadow-sm">
-            <thead>
-              <tr>
-                {headers.map((key) => (
-                  <th
-                    key={key}
-                    className="py-2 px-4 border-b bg-gray-200 text-left"
-                  >
-                    {key}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((row, rowIndex) => (
-                <tr key={rowIndex} className="even:bg-gray-100">
-                  {headers.map((header) => (
-                    <td key={header} className="py-2 px-4 border-b">
-                      {row[header]}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>Add Excel File.</p>
-        )}
-      </div> */}
     </div>
   );
 };

@@ -136,7 +136,7 @@ export function lineThree(person) {
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
 
-  for (let t = x; t <= x + w - x - 1; t++) {
+  for (let t = x - 1; t <= x + w - x - 1; t++) {
     const currentProbability = probabilityToKeepWork(t, person.gender);
     probabilityCalc *= currentProbability;
   }
@@ -157,7 +157,7 @@ export function lineFour1(person) {
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
 
-  for (let t = x; t <= x + w - x - 1; t++) {
+  for (let t = x - 1; t <= x + w - x - 1; t++) {
     const currentProbability = probabilityToKeepWork(t, person.gender);
     probabilityCalc *= currentProbability;
   }
@@ -177,7 +177,7 @@ export function lineFour2(person) {
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
 
-  for (let t = x; t <= x + w - x - 1; t++) {
+  for (let t = x - 1; t <= x + w - x - 1; t++) {
     const currentProbability = probabilityToKeepWork(t, person.gender);
     probabilityCalc *= currentProbability;
   }

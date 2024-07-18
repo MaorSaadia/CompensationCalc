@@ -10,7 +10,9 @@ const Home = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-        <h1 className="text-4xl font-bold mb-4 pt-10">Upload Excel File</h1>
+        <h1 className="text-4xl font-bold mb-4 pt-10">
+          Upload Excel File To Calculte The Compensation
+        </h1>
         <ExcelReader />
       </div>
     </>

@@ -29,6 +29,16 @@ export function firstFormula(salary, seniority, section14Rate) {
 }
 
 export function probabilityToKeepWork(age, gender) {
+  // console.log(
+  //   "from probabilityToKeepWork: " +
+  //     "1  " +
+  //     "- " +
+  //     (probabilityToResign(age) +
+  //       " - " +
+  //       probabilityToFired(age) +
+  //       " - " +
+  //       probabilityToDie(age, gender))
+  // );
   return (
     1 -
     (probabilityToResign(age) +
@@ -71,6 +81,18 @@ export function discountRate(year) {
   return entry ? entry.discountRate : null;
 }
 
+export function section14(year, person) {
+  if (person.section14Date) {
+    if (Number(year) < Number(getYearFromDate(person.section14Date))) {
+      return 0;
+    } else {
+      return person.section14Rate;
+    }
+  } else {
+    return 0;
+  }
+}
+
 export function lineOne(person) {
   let sum = 0;
   let probabilityCalc = 1;
@@ -78,11 +100,30 @@ export function lineOne(person) {
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
+  console.log(
+    "w - x - 2 :" + w + " - " + x + " - " + "2" + " = " + (w - x - 2)
+  );
   for (let t = 0; t <= w - x - 2; t++) {
+    const currentYear = getYearFromDate(person.startDate) + t;
+    console.log(
+      "Round: " +
+        t +
+        " age: " +
+        (x + t + 1) +
+        " Year: " +
+        currentYear +
+        " section14: " +
+        section14(currentYear, person)
+    );
+
     const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
     probabilityCalc *= currentProbability;
     sum +=
-      (firstFormula(person.salary, sen, person.section14Rate) *
+      (firstFormula(
+        person.salary,
+        sen,
+        section14(getYearFromDate(person.startDate) + t + 1, person)
+      ) *
         (1 + SALARY_GROWTH_RATE) ** (t + 0.5) *
         probabilityCalc *
         probabilityToFired(x + t + 1)) /
@@ -103,7 +144,11 @@ export function lineTwo1(person) {
     const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
     probabilityCalc *= currentProbability;
     sum +=
-      (firstFormula(person.salary, sen, person.section14Rate) *
+      (firstFormula(
+        person.salary,
+        sen,
+        section14(getYearFromDate(person.startDate) + t + 1, person)
+      ) *
         (1 + SALARY_GROWTH_RATE) ** (t + 0.5) *
         probabilityCalc *
         probabilityToDie(x + t + 1, person.gender)) /
@@ -136,7 +181,7 @@ export function lineThree(person) {
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
 
-  for (let t = x - 1; t <= x + w - x - 1; t++) {
+  for (let t = x - 1; t <= w - 1; t++) {
     const currentProbability = probabilityToKeepWork(t, person.gender);
     probabilityCalc *= currentProbability;
   }
@@ -157,7 +202,7 @@ export function lineFour1(person) {
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
 
-  for (let t = x - 1; t <= x + w - x - 1; t++) {
+  for (let t = x - 1; t <= w - 1; t++) {
     const currentProbability = probabilityToKeepWork(t, person.gender);
     probabilityCalc *= currentProbability;
   }
@@ -177,7 +222,7 @@ export function lineFour2(person) {
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
 
-  for (let t = x - 1; t <= x + w - x - 1; t++) {
+  for (let t = x - 1; t <= w - 1; t++) {
     const currentProbability = probabilityToKeepWork(t, person.gender);
     probabilityCalc *= currentProbability;
   }
@@ -201,3 +246,197 @@ export function lineFive(person) {
     (1 + discountRate(w - x)) ** (w - x);
   return sum;
 }
+
+///Amir from here
+
+// export function Dismissal(t, x, person) {
+//   // console.log("round t: " + t + " " + "age x: " + (x + t - 1));
+
+//   const w = person.gender === "M" ? 67 : 64;
+//   const sen = seniority(person.startDate, person.leaveDate);
+
+//   // console.log(
+//   //   "Formula:" +
+//   //     firstFormula(person.salary, sen, person.section14Rate) +
+//   //     " * " +
+//   //     (1 + 0.04) +
+//   //     " ** " +
+//   //     (t + 0.5) +
+//   //     " * " +
+//   //     currentProbability +
+//   //     " * " +
+//   //     probabilityToFired(x + t + 1) +
+//   //     " / " +
+//   //     (1 + discountRate(t + 1)) +
+//   //     " ** " +
+//   //     (t + 0.5)
+//   // );
+
+//   return (
+//     (firstFormula(person.salary, sen, person.section14Rate) *
+//       (1 + SALARY_GROWTH_RATE) ** (t + 0.5) *
+//       currentProbability *
+//       probabilityToFired(x + t + 1)) /
+//     (1 + discountRate(t + 1)) ** (t + 0.5)
+//   );
+// }
+// export function Resignation(t, x, person) {
+//   // console.log(
+//   //   person.assetsValue +
+//   //     " * " +
+//   //     currentProbability +
+//   //     " * " +
+//   //     probabilityToResign(x + t - 1)
+//   // );
+//   return (
+//     person.assetsValue * currentProbability * probabilityToResign(x + t + 1)
+//   );
+// }
+// export function Death(t, x, person) {
+//   const w = person.gender === "M" ? 67 : 64;
+//   const sen = seniority(person.startDate, person.leaveDate);
+
+//   // console.log(
+//   //   "Formula:" +
+//   //     firstFormula(person.salary, sen, person.section14Rate) +
+//   //     " * " +
+//   //     (1 + 0.04) +
+//   //     " ** " +
+//   //     (t + 0.5) +
+//   //     " * " +
+//   //     currentProbability +
+//   //     " * " +
+//   //     probabilityToDie(x + t, person.gender) +
+//   //     " / " +
+//   //     (1 + discountRate(t + 1)) +
+//   //     " ** " +
+//   //     (t + 0.5)
+//   // );
+//   return (
+//     (firstFormula(person.salary, sen, person.section14Rate) *
+//       (1 + SALARY_GROWTH_RATE) ** (t + 0.5) *
+//       currentProbability *
+//       probabilityToDie(x + t + 1, person.gender)) /
+//     (1 + discountRate(t + 1)) ** (t + 0.5)
+//   );
+// }
+
+// let currentProbability = 1;
+
+// export function Sum(person) {
+//   const sen = seniority(person.startDate, person.leaveDate);
+//   let sum = 0;
+//   const w = person.gender === "M" ? 67 : 64;
+//   let x = calcAge(person.birthDate);
+//   let t = 0;
+//   for (t = 0; t < w; t++) {
+//     //calc the probability to keep work
+//     if (t == 0) {
+//       currentProbability = 1;
+//       // console.log("currentProbability: " + currentProbability);
+//     } else {
+//       currentProbability *= probabilityToKeepWork(x + t - 1, person.gender);
+//       // console.log("currentProbability: " + currentProbability);
+//     }
+//     sum += Dismissal(t, x, person);
+//     sum += Resignation(t, x, person);
+//     sum += Death(t, x, person);
+//   }
+
+//   console.log("w: " + w + "x: " + x);
+
+//   sum +=
+//     (firstFormula(person.salary, sen, person.section14Rate) *
+//       (1 + SALARY_GROWTH_RATE) ** (w - x + 0.5) *
+//       currentProbability *
+//       probabilityToFired(w - 1)) /
+//     (1 + discountRate(t + 1)) ** (w - x + 0.5);
+
+//   console.log(
+//     "sum " +
+//       "+= " +
+//       (firstFormula(person.salary, sen, person.section14Rate) +
+//         " * " +
+//         (1 + SALARY_GROWTH_RATE) +
+//         " ** " +
+//         (w - x + 0.5) +
+//         " * " +
+//         currentProbability +
+//         " * " +
+//         probabilityToFired(w - 1)) +
+//       " / " +
+//       (1 + discountRate(t + 1)) +
+//       " ** " +
+//       (w - x + 0.5)
+//   );
+
+//   sum += person.assetsValue * currentProbability * probabilityToResign(w - 1);
+
+//   console.log(
+//     "sum += " +
+//       person.assetsValue +
+//       " * " +
+//       currentProbability +
+//       " * " +
+//       probabilityToResign(w - 1)
+//   );
+
+//   sum +=
+//     (firstFormula(person.salary, sen, person.section14Rate) *
+//       (1 + SALARY_GROWTH_RATE) ** (w - x - 1 + 0.5) *
+//       currentProbability *
+//       probabilityToDie(w - 1, person.gender)) /
+//     (1 + discountRate(t + 1)) ** (w - x - 1 + 0.5);
+
+//   console.log(
+//     "sum " +
+//       " += " +
+//       (firstFormula(person.salary, sen, person.section14Rate) +
+//         " * " +
+//         (1 + SALARY_GROWTH_RATE) +
+//         " ** " +
+//         (w - x - 1 + 0.5) +
+//         " * " +
+//         currentProbability +
+//         " * " +
+//         probabilityToDie(w - 1, person.gender)) +
+//       " / " +
+//       (1 + discountRate(t + 1)) +
+//       " ** " +
+//       (w - x - 1 + 0.5)
+//   );
+
+//   sum +=
+//     (firstFormula(person.salary, sen, person.section14Rate) *
+//       (1 + SALARY_GROWTH_RATE) ** (w - x) *
+//       currentProbability *
+//       (1 -
+//         probabilityToFired(w - 1) -
+//         probabilityToResign(w - 1) -
+//         probabilityToDie(w - 1, person.gender))) /
+//     (1 + discountRate(t + 1)) ** (w - x);
+
+//   console.log(
+//     "sum +=" +
+//       (firstFormula(person.salary, sen, person.section14Rate) +
+//         " * " +
+//         (1 + SALARY_GROWTH_RATE) +
+//         " ** " +
+//         (w - x) +
+//         " * " +
+//         currentProbability +
+//         " * " +
+//         (" 1 " +
+//           " - " +
+//           probabilityToFired(w - 1) +
+//           " - " +
+//           probabilityToResign(w - 1) +
+//           " - " +
+//           probabilityToDie(w - 1, person.gender))) +
+//       " / " +
+//       (1 + discountRate(t + 1)) +
+//       " ** " +
+//       (w - x)
+//   );
+//   return sum;
+// }

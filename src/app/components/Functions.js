@@ -32,6 +32,18 @@ export function calcAge(birthDate) {
   return Number(2023 - getYearFromDate(birthDate));
 }
 
+// export function section14(year, person) {
+//   if (person.section14Date) {
+//     if (Number(year) < Number(getYearFromDate(person.section14Date))) {
+//       return 0;
+//     } else {
+//       return person.section14Rate;
+//     }
+//   } else {
+//     return 0;
+//   }
+// }
+
 // export function seniority(startDate, leaveDate) {
 //   const start = getDateFromString(startDate);
 //   const leave = getDateFromString(leaveDate);
@@ -121,8 +133,7 @@ export function lineOne(person) {
       section14Rate = 0;
     }
   }
-  console.log(diff);
-  console.log(sen);
+
   for (let t = 0; t <= w - x - 2; t++) {
     const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
     probabilityCalc *= currentProbability;
@@ -140,8 +151,8 @@ export function lineOne(person) {
 export function lineTwo1(person) {
   let sum = 0;
   let probabilityCalc = 1;
-  let diff = 0;
 
+  let diff = 0;
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   let sen = Math.floor(seniority(person.startDate, person.leaveDate));

@@ -160,17 +160,7 @@ const Formulas = ({ data }) => {
 
 // const Formulas = ({ data }) => {
 //   if (data.length > 0) {
-//     const firstPerson = data[15];
-
-//     function formatDate(dateString) {
-//       if (!dateString) return null;
-//       const date = new Date(dateString);
-//       if (isNaN(date.getTime())) return dateString; // Return original string if invalid date
-//       const day = date.getDate().toString().padStart(2, "0");
-//       const month = (date.getMonth() + 1).toString().padStart(2, "0");
-//       const year = date.getFullYear().toString().slice(-2);
-//       return `${day}/${month}/${year}`;
-//     }
+//     const firstPerson = data[2];
 
 //     const person = {
 //       firstName: firstPerson["שם"],
@@ -213,8 +203,22 @@ const Formulas = ({ data }) => {
 //     ) {
 //       result *= 1.15;
 //     }
-//     console.log(person.lastName);
-//     console.log(person.leaveDate);
+//     console.log("Person Details:");
+//     console.log("First Name: ", person.firstName);
+//     console.log("Last Name: ", person.lastName);
+//     console.log("Gender: ", person.gender);
+//     console.log("Birth Date: ", person.birthDate);
+//     console.log("Start Date: ", person.startDate);
+//     console.log("Salary: ", person.salary);
+//     console.log("Section 14 Date: ", person.section14Date);
+//     console.log("Section 14 Rate: ", person.section14Rate);
+//     console.log("Assets Value: ", person.assetsValue);
+//     console.log("Leaving Reason: ", person.leavingReason);
+//     console.log("Check: ", person.check);
+//     console.log("Assets Payment: ", person.assetsPayment);
+//     console.log("Leave Date: ", person.leaveDate);
+//     console.log("Deposits: ", person.deposits);
+
 //     console.log("sum: ", result.toFixed(0));
 //   }
 // };

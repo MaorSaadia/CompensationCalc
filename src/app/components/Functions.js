@@ -32,34 +32,29 @@ export function calcAge(birthDate) {
   return Number(2023 - getYearFromDate(birthDate));
 }
 
-export function seniority(startDate, leaveDate) {
-  const start = getDateFromString(startDate);
-  const leave = getDateFromString(leaveDate);
-
-  const diffTime = Math.abs(start - leave);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  const years = diffDays / 365.25; // Using 365.25 to account for leap years
-  return Number(years.toFixed(1));
-}
-
 // export function seniority(startDate, leaveDate) {
-//   console.log(startDate, leaveDate);
-//   const startYear = getYearFromDate(startDate);
-//   const leaveYear = leaveDate ? getYearFromDate(leaveDate) : 2023;
+//   const start = getDateFromString(startDate);
+//   const leave = getDateFromString(leaveDate);
 
-//   return Number(leaveYear - startYear);
+//   const diffTime = Math.abs(start - leave);
+//   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+//   const years = diffDays / 365.25; // Using 365.25 to account for leap years
+//   return Number(years.toFixed(1));
 // }
 
+export function seniority(startDate, leaveDate) {
+  const startYear = getYearFromDate(startDate);
+  const leaveYear = leaveDate ? getYearFromDate(leaveDate) : 2023;
+
+  return Number(leaveYear - startYear);
+}
+
 export function section14RateDifference(startDate, getYear) {
-  const startWork = getDateFromString(startDate);
-  const getYear14 = getDateFromString(getYear || "31/12/23");
+  const startWork = getYearFromDate(startDate);
+  const getYear14 = getYearFromDate(getYear);
 
-  const diffTime = Math.abs(startWork - getYear14);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  const years = diffDays / 365.25;
-  return Number(years.toFixed(1));
+  return getYear14 - startWork;
 }
 
 export function firstFormula(salary, seniority, section14Rate) {
@@ -126,7 +121,8 @@ export function lineOne(person) {
       section14Rate = 0;
     }
   }
-
+  console.log(diff);
+  console.log(sen);
   for (let t = 0; t <= w - x - 2; t++) {
     const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
     probabilityCalc *= currentProbability;

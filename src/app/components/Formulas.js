@@ -160,7 +160,7 @@ const Formulas = ({ data }) => {
 
 // const Formulas = ({ data }) => {
 //   if (data.length > 0) {
-//     const firstPerson = data[1];
+//     const firstPerson = data[15];
 
 //     function formatDate(dateString) {
 //       if (!dateString) return null;
@@ -197,7 +197,7 @@ const Formulas = ({ data }) => {
 //     const sixConnected = Number(lineFour2(person));
 //     const sevenConnected = Number(lineFive(person));
 
-//     const result =
+//     let result =
 //       firstConnected +
 //       secondConnected +
 //       thirdConnected +
@@ -205,7 +205,16 @@ const Formulas = ({ data }) => {
 //       fiveConnected +
 //       sixConnected +
 //       sevenConnected;
+
+//     if (
+//       person.leavingReason === "פרישה לגמלאות" ||
+//       person.leavingReason === "פיטורין" ||
+//       person.leavingReason === "מוות"
+//     ) {
+//       result *= 1.15;
+//     }
 //     console.log(person.lastName);
+//     console.log(person.leaveDate);
 //     console.log("sum: ", result.toFixed(0));
 //   }
 // };

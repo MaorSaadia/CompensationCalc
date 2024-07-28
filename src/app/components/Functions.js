@@ -29,16 +29,6 @@ export function firstFormula(salary, seniority, section14Rate) {
 }
 
 export function probabilityToKeepWork(age, gender) {
-  // console.log(
-  //   "from probabilityToKeepWork: " +
-  //     "1  " +
-  //     "- " +
-  //     (probabilityToResign(age) +
-  //       " - " +
-  //       probabilityToFired(age) +
-  //       " - " +
-  //       probabilityToDie(age, gender))
-  // );
   return (
     1 -
     (probabilityToResign(age) +
@@ -100,22 +90,8 @@ export function lineOne(person) {
   const w = person.gender === "M" ? 67 : 64;
   const x = calcAge(person.birthDate);
   const sen = seniority(person.startDate, person.leaveDate);
-  console.log(
-    "w - x - 2 :" + w + " - " + x + " - " + "2" + " = " + (w - x - 2)
-  );
-  for (let t = 0; t <= w - x - 2; t++) {
-    const currentYear = getYearFromDate(person.startDate) + t;
-    console.log(
-      "Round: " +
-        t +
-        " age: " +
-        (x + t + 1) +
-        " Year: " +
-        currentYear +
-        " section14: " +
-        section14(currentYear, person)
-    );
 
+  for (let t = 0; t <= w - x - 2; t++) {
     const currentProbability = probabilityToKeepWork(x + t + 1, person.gender);
     probabilityCalc *= currentProbability;
     sum +=
@@ -249,7 +225,25 @@ export function lineFive(person) {
 
 ///Amir from here
 
+// console.log(
+//   "w - x - 2 :" + w + " - " + x + " - " + "2" + " = " + (w - x - 2)
+// );
+
+// const currentYear = getYearFrmDate(person.startDate) + t;
+
+// console.log(
+//   "Round: " +
+//     t +
+//     " age: " +
+//     (x + t + 1) +
+//     " Year: " +
+//     currentYear +
+//     " section14: " +
+//     section14(currentYear, person)
+// );
+
 // export function Dismissal(t, x, person) {
+
 //   // console.log("round t: " + t + " " + "age x: " + (x + t - 1));
 
 //   const w = person.gender === "M" ? 67 : 64;

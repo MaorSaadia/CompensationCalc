@@ -1,7 +1,7 @@
 import React from "react";
 import {
-  Sum,
   calcAge,
+  formatDate,
   lineFive,
   lineFour1,
   lineFour2,
@@ -11,26 +11,24 @@ import {
   lineTwo2,
 } from "./Functions";
 import * as XLSX from "xlsx";
-import { Lexend_Tera } from "next/font/google";
 
 const Formulas = ({ data }) => {
-  console.log(data);
   const handleExport = () => {
-    const exportData = data.map((row, index) => {
+    const exportData = data.map((row) => {
       const person = {
         firstName: row["שם"],
         lastName: row["שם משפחה"],
         gender: row["מין"],
-        birthDate: row["תאריך לידה"],
-        startDate: row["תאריך תחילת עבודה"],
-        salary: parseFloat(row["שכר"].replace(/,/g, "")),
-        section14Date: row["תאריך  קבלת סעיף 14"],
+        birthDate: formatDate(row["תאריך לידה"]),
+        startDate: formatDate(row["תאריך תחילת עבודה"]),
+        salary: parseFloat(row["שכר"]?.replace(/,/g, "")),
+        section14Date: formatDate(row["תאריך  קבלת סעיף 14"]),
         section14Rate: (row["אחוז סעיף 14"] ?? 0) / 100,
         assetsValue: parseFloat(row["שווי נכס"]?.replace(/,/g, "")) ?? 0,
         leavingReason: row["סיבת עזיבה"],
         check: row["השלמה בצ'ק"],
         assetsPayment: row["תשלום מהנכס"],
-        leaveDate: row["תאריך עזיבה "],
+        leaveDate: formatDate(row["תאריך עזיבה"] ?? "31/12/23"),
         deposits: row["הפקדות"],
       };
       const firstConnected = Number(lineOne(person));
@@ -97,18 +95,19 @@ const Formulas = ({ data }) => {
               firstName: row["שם"],
               lastName: row["שם משפחה"],
               gender: row["מין"],
-              birthDate: row["תאריך לידה"],
-              startDate: row["תאריך תחילת עבודה"],
-              salary: parseFloat(row["שכר"].replace(/,/g, "")),
-              section14Date: row["תאריך  קבלת סעיף 14"],
+              birthDate: formatDate(row["תאריך לידה"]),
+              startDate: formatDate(row["תאריך תחילת עבודה"]),
+              salary: parseFloat(row["שכר"]?.replace(/,/g, "")),
+              section14Date: formatDate(row["תאריך  קבלת סעיף 14"]),
               section14Rate: (row["אחוז סעיף 14"] ?? 0) / 100,
               assetsValue: parseFloat(row["שווי נכס"]?.replace(/,/g, "")) ?? 0,
               leavingReason: row["סיבת עזיבה"],
               check: row["השלמה בצ'ק"],
               assetsPayment: row["תשלום מהנכס"],
-              leaveDate: row["תאריך עזיבה "],
+              leaveDate: formatDate(row["תאריך עזיבה"] ?? "31/12/23"),
               deposits: row["הפקדות"],
             };
+
             const firstConnected = Number(lineOne(person));
             const secondConnected = Number(lineTwo1(person));
             const thirdConnected = Number(lineTwo2(person));
@@ -116,7 +115,6 @@ const Formulas = ({ data }) => {
             const fiveConnected = Number(lineFour1(person));
             const sixConnected = Number(lineFour2(person));
             const sevenConnected = Number(lineFive(person));
-
             let result =
               firstConnected +
               secondConnected +
@@ -133,6 +131,7 @@ const Formulas = ({ data }) => {
             ) {
               result *= 1.15;
             }
+
             return (
               <tr
                 key={index}
@@ -161,42 +160,35 @@ const Formulas = ({ data }) => {
 
 // const Formulas = ({ data }) => {
 //   if (data.length > 0) {
-//     const firstPerson = data[1]; // Selecting the first person from the data array
+//     const firstPerson = data[1];
+
+//     function formatDate(dateString) {
+//       if (!dateString) return null;
+//       const date = new Date(dateString);
+//       if (isNaN(date.getTime())) return dateString; // Return original string if invalid date
+//       const day = date.getDate().toString().padStart(2, "0");
+//       const month = (date.getMonth() + 1).toString().padStart(2, "0");
+//       const year = date.getFullYear().toString().slice(-2);
+//       return `${day}/${month}/${year}`;
+//     }
 
 //     const person = {
 //       firstName: firstPerson["שם"],
 //       lastName: firstPerson["שם משפחה"],
 //       gender: firstPerson["מין"],
-//       birthDate: firstPerson["תאריך לידה"],
-//       startDate: firstPerson["תאריך תחילת עבודה"],
-//       salary: parseFloat(firstPerson["שכר"].replace(/,/g, "")),
-//       section14Date: firstPerson["תאריך  קבלת סעיף 14"],
+//       birthDate: formatDate(firstPerson["תאריך לידה"]),
+//       startDate: formatDate(firstPerson["תאריך תחילת עבודה"]),
+//       salary: parseFloat(firstPerson["שכר"]?.replace(/,/g, "")),
+//       section14Date: formatDate(firstPerson["תאריך  קבלת סעיף 14"]),
 //       section14Rate: (firstPerson["אחוז סעיף 14"] ?? 0) / 100,
 //       assetsValue: parseFloat(firstPerson["שווי נכס"]?.replace(/,/g, "")) ?? 0,
 //       leavingReason: firstPerson["סיבת עזיבה"],
 //       check: firstPerson["השלמה בצ'ק"],
 //       assetsPayment: firstPerson["תשלום מהנכס"],
-//       leaveDate: firstPerson["תאריך עזיבה "],
+//       leaveDate: formatDate(firstPerson["תאריך עזיבה"] ?? "31/12/23"),
 //       deposits: firstPerson["הפקדות"],
 //     };
 
-//     console.log("Person Details:");
-//     console.log("First Name: ", person.firstName);
-//     console.log("Last Name: ", person.lastName);
-//     console.log("Gender: ", person.gender);
-//     console.log("Birth Date: ", person.birthDate);
-//     console.log("Start Date: ", person.startDate);
-//     console.log("Salary: ", person.salary);
-//     console.log("Section 14 Date: ", person.section14Date);
-//     console.log("Section 14 Rate: ", person.section14Rate);
-//     console.log("Assets Value: ", person.assetsValue);
-//     console.log("Leaving Reason: ", person.leavingReason);
-//     console.log("Check: ", person.check);
-//     console.log("Assets Payment: ", person.assetsPayment);
-//     console.log("Leave Date: ", person.leaveDate);
-//     console.log("Deposits: ", person.deposits);
-
-//     // const result = Number(Sum(person));
 //     const firstConnected = Number(lineOne(person));
 //     const secondConnected = Number(lineTwo1(person));
 //     const thirdConnected = Number(lineTwo2(person));
@@ -205,7 +197,7 @@ const Formulas = ({ data }) => {
 //     const sixConnected = Number(lineFour2(person));
 //     const sevenConnected = Number(lineFive(person));
 
-//     let result =
+//     const result =
 //       firstConnected +
 //       secondConnected +
 //       thirdConnected +
@@ -213,17 +205,8 @@ const Formulas = ({ data }) => {
 //       fiveConnected +
 //       sixConnected +
 //       sevenConnected;
-
-//     if (
-//       person.leavingReason === "פרישה לגמלאות" ||
-//       person.leavingReason === "פיטורין" ||
-//       person.leavingReason === "מוות"
-//     ) {
-//       result *= 1.15;
-//     }
-
-//     console.log(person.firstName + " " + person.lastName);
-//     console.log("sum: ", result.toFixed(2));
+//     console.log(person.lastName);
+//     console.log("sum: ", result.toFixed(0));
 //   }
 // };
 

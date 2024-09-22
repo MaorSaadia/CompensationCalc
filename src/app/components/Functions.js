@@ -101,7 +101,6 @@ export function probabilityToFired(age) {
 }
 
 export function probabilityToDie(age, gender) {
-  // console.log(age, gender);
   if (gender === "M") {
     const entry = maleDeath.find((item) => item.age === age);
     return entry ? entry.qx : null;
@@ -323,10 +322,6 @@ export function onGoingServiceCost(lastSalary, partOfYear, section14Rate) {
   return onGoingServiceCost;
 }
 
-export function capitalizationCost() {
-  // const capitalizationCost=
-}
-
 export function calculateServiceLife(startAge, gender, retirement) {
   let serviceLife = 0;
   let cumulativeProbability = 1;
@@ -337,7 +332,11 @@ export function calculateServiceLife(startAge, gender, retirement) {
     cumulativeProbability *= probabilityToStay;
   }
 
-  return serviceLife;
+  return Number(serviceLife.toFixed());
+}
+
+export function benefitsPaid(assetsPayment, completionByCheck) {
+  return assetsPayment + completionByCheck;
 }
 
 export function calculation1(person, result) {
@@ -381,25 +380,40 @@ export function calculation1(person, result) {
 
   return calculation1;
 }
-export function calculation2(person) {
+export function calculation2(person, result) {
+  const openingBalance = person.openingBalance;
   const gender = person.gender;
   const startAge = calcAge(person.birthDate);
   const retirement = person.gender === "M" ? 67 : 64;
+  const assetsPayment = person.assetsPayment;
+  const completionByCheck = person.check;
 
   const expectedServiceLife = calculateServiceLife(
     startAge,
     gender,
     retirement
   );
-  console.log(expectedServiceLife.toFixed());
-  // console.log(
-  //   `Expected service life for ${person.firstName} ${
-  //     person.lastName
-  //   }  a ${startAge}-year-old ${gender}: ${expectedServiceLife.toFixed(
-  //     2
-  //   )} years`
-  // );
+
+  const serviceLifeDiscountRate = discountRate(expectedServiceLife);
+  const calcBenefitsPaid = benefitsPaid(assetsPayment, completionByCheck);
+
+  const capitalizationCost =
+    openingBalance * serviceLifeDiscountRate +
+    ((calculation1(person, result) - calcBenefitsPaid) *
+      serviceLifeDiscountRate) /
+      2;
+
+  console.log(serviceLifeDiscountRate);
+  console.log(calcBenefitsPaid);
+  console.log(openingBalance);
+  console.log(calculation1(person, result).toFixed());
+  console.log(calcBenefitsPaid);
+  console.log(serviceLifeDiscountRate);
+  console.log(capitalizationCost);
+
+  return capitalizationCost;
 }
+
 export function calculation3(person) {}
 export function calculation4(person) {}
 export function calculation5(person) {}

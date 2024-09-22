@@ -166,7 +166,7 @@ import { openingBalances } from "../data/openingBalances";
 
 const Formulas = ({ data }) => {
   if (data.length > 0) {
-    const firstPerson = data[2];
+    const firstPerson = data[1];
     // const openingBalance = openingBalances[2].commitment;
     // const assets = openingBalances[2].assets;
     // console.log("openingBalance:", openingBalance);
@@ -182,11 +182,14 @@ const Formulas = ({ data }) => {
       section14Date: formatDate(firstPerson["תאריך  קבלת סעיף 14"]),
       section14Rate: (firstPerson["אחוז סעיף 14"] ?? 0) / 100,
       assetsValue: parseFloat(firstPerson["שווי נכס"]?.replace(/,/g, "")) ?? 0,
-      deposits: firstPerson["הפקדות"] ?? 0,
+      deposits: parseFloat(firstPerson["הפקדות"]?.replace(/,/g, "")) ?? 0,
       leaveDate: formatDate(firstPerson["תאריך עזיבה"] ?? "31/12/23"),
-      assetsPayment: firstPerson["תשלום מהנכס"],
-      check: firstPerson["השלמה בצ'ק"] ?? 0,
-      leavingReason: firstPerson["סיבת עזיבה"],
+      assetsPayment:
+        parseFloat(firstPerson["תשלום מהנכס"]?.replace(/,/g, "")) || 0,
+      check: parseFloat(firstPerson["השלמה בצ'ק"]?.replace(/,/g, "")) || 0,
+      leavingReason: firstPerson["סיבת עזיבה"] || null,
+
+      // Part - 2
       openingBalance: openingBalances[2]?.commitment,
       assets: openingBalances[2]?.assets,
     };
@@ -216,27 +219,32 @@ const Formulas = ({ data }) => {
       result *= 1.15;
     }
     console.log("Person Details:");
-    console.log("First Name: ", person.firstName);
-    console.log("Last Name: ", person.lastName);
-    console.log("Gender: ", person.gender);
-    console.log("Birth Date: ", person.birthDate);
-    console.log("Start Date: ", person.startDate);
-    console.log("Salary: ", person.salary);
-    console.log("Section 14 Date: ", person.section14Date);
-    console.log("Section 14 Rate: ", person.section14Rate);
-    console.log("Assets Value: ", person.assetsValue);
-    console.log("Deposits: ", person.deposits);
-    console.log("Leave Date: ", person.leaveDate);
-    console.log("Assets Payment: ", person.assetsPayment);
-    console.log("Check: ", person.check);
-    console.log("Leaving Reason: ", person.leavingReason);
-    console.log("sum: ", result.toFixed(0));
+    // console.log("First Name: ", person.firstName);
+    // console.log("Last Name: ", person.lastName);
+    // console.log("Gender: ", person.gender);
+    // console.log("Birth Date: ", person.birthDate);
+    // console.log("Start Date: ", person.startDate);
+    // console.log("Salary: ", person.salary);
+    // console.log("Section 14 Date: ", person.section14Date);
+    // console.log("Section 14 Rate: ", person.section14Rate);
+    // console.log("Assets Value: ", person.assetsValue);
+    // console.log("Deposits: ", person.deposits);
+    // console.log("Leave Date: ", person.leaveDate);
+    // console.log("Assets Payment: ", person.assetsPayment);
+    // console.log("Check: ", person.check);
+    // console.log("Leaving Reason: ", person.leavingReason);
+    // console.log("sum: ", result.toFixed(0));
 
-    // const firstCalculation = calculation1(person, result.toFixed(0));
-    const secondCalculation = calculation2(person);
+    // Part - 2
+    // console.log("Opening Balance: ", person.openingBalance);
+    // console.log("Assets: ", person.assets);
 
-    // console.log("firstCalculation: ", firstCalculation);
-    console.log("secondCalculation: ", secondCalculation);
+    // Part - 2
+    const firstCalculation = Number(calculation1(person, result.toFixed(0)));
+    const secondCalculation = Number(calculation2(person, result));
+
+    console.log("firstCalculation: ", firstCalculation.toFixed());
+    console.log("secondCalculation: ", secondCalculation.toFixed());
   }
 };
 

@@ -323,6 +323,8 @@ export function onGoingServiceCost(lastSalary, partOfYear, section14Rate) {
   return onGoingServiceCost;
 }
 
+export function capitalizationCost() {}
+
 export function calculation1(person, result) {
   let diff = 0;
 

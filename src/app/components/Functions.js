@@ -323,7 +323,22 @@ export function onGoingServiceCost(lastSalary, partOfYear, section14Rate) {
   return onGoingServiceCost;
 }
 
-export function capitalizationCost() {}
+export function capitalizationCost() {
+  // const capitalizationCost=
+}
+
+export function calculateServiceLife(startAge, gender, retirement) {
+  let serviceLife = 0;
+  let cumulativeProbability = 1;
+
+  for (let currentAge = startAge; currentAge <= retirement; currentAge++) {
+    const probabilityToStay = probabilityToKeepWork(currentAge, gender);
+    serviceLife += cumulativeProbability * probabilityToStay;
+    cumulativeProbability *= probabilityToStay;
+  }
+
+  return serviceLife;
+}
 
 export function calculation1(person, result) {
   let diff = 0;
@@ -366,7 +381,25 @@ export function calculation1(person, result) {
 
   return calculation1;
 }
-export function calculation2(person) {}
+export function calculation2(person) {
+  const gender = person.gender;
+  const startAge = calcAge(person.birthDate);
+  const retirement = person.gender === "M" ? 67 : 64;
+
+  const expectedServiceLife = calculateServiceLife(
+    startAge,
+    gender,
+    retirement
+  );
+  console.log(expectedServiceLife.toFixed());
+  // console.log(
+  //   `Expected service life for ${person.firstName} ${
+  //     person.lastName
+  //   }  a ${startAge}-year-old ${gender}: ${expectedServiceLife.toFixed(
+  //     2
+  //   )} years`
+  // );
+}
 export function calculation3(person) {}
 export function calculation4(person) {}
 export function calculation5(person) {}

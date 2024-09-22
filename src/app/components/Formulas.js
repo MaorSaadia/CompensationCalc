@@ -1,7 +1,9 @@
 import React from "react";
 import {
   calcAge,
+  calculateServiceLife,
   calculation1,
+  calculation2,
   formatDate,
   lineFive,
   lineFour1,
@@ -13,6 +15,7 @@ import {
   onGoingServiceCost,
 } from "./Functions";
 import * as XLSX from "xlsx";
+import { openingBalances } from "../data/openingBalances";
 
 // const Formulas = ({ data }) => {
 //   const handleExport = () => {
@@ -164,6 +167,10 @@ import * as XLSX from "xlsx";
 const Formulas = ({ data }) => {
   if (data.length > 0) {
     const firstPerson = data[2];
+    // const openingBalance = openingBalances[2].commitment;
+    // const assets = openingBalances[2].assets;
+    // console.log("openingBalance:", openingBalance);
+    // console.log("assets:", assets);
 
     const person = {
       firstName: firstPerson["שם"],
@@ -180,6 +187,8 @@ const Formulas = ({ data }) => {
       assetsPayment: firstPerson["תשלום מהנכס"],
       check: firstPerson["השלמה בצ'ק"] ?? 0,
       leavingReason: firstPerson["סיבת עזיבה"],
+      openingBalance: openingBalances[2]?.commitment,
+      assets: openingBalances[2]?.assets,
     };
 
     const firstConnected = Number(lineOne(person));
@@ -223,8 +232,11 @@ const Formulas = ({ data }) => {
     console.log("Leaving Reason: ", person.leavingReason);
     console.log("sum: ", result.toFixed(0));
 
-    const firstCalculation = calculation1(person, result.toFixed(0));
-    console.log("firstCalculation: ", firstCalculation);
+    // const firstCalculation = calculation1(person, result.toFixed(0));
+    const secondCalculation = calculation2(person);
+
+    // console.log("firstCalculation: ", firstCalculation);
+    console.log("secondCalculation: ", secondCalculation);
   }
 };
 

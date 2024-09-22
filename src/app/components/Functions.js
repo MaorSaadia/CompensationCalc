@@ -300,3 +300,21 @@ export function lineFive(person) {
     (1 + discountRate(w - x)) ** (w - x);
   return sum;
 }
+
+//// Part - 2
+
+export function actuarialFactor(person) {}
+
+export function onGoingServiceCost(person) {
+  console.log("personSalary: ", person.salary);
+  console.log("personSection14Rate: ", person.section14Rate);
+
+  let onGoingServiceCost = person.salary * 1 * (1 - person.section14Rate);
+  return onGoingServiceCost;
+}
+
+export function calculation1(person) {}
+export function calculation2(person) {}
+export function calculation3(person) {}
+export function calculation4(person) {}
+export function calculation5(person) {}

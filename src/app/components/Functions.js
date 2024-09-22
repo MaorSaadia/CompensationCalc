@@ -303,17 +303,67 @@ export function lineFive(person) {
 
 //// Part - 2
 
-export function actuarialFactor(person) {}
+export function actuarialFactor(
+  presentValueOfTheEmployeeLiability,
+  lastSalary,
+  sen,
+  section14Rate
+) {
+  if (section14Rate === 1) return 0;
 
-export function onGoingServiceCost(person) {
-  console.log("personSalary: ", person.salary);
-  console.log("personSection14Rate: ", person.section14Rate);
+  let actuarialFactor =
+    presentValueOfTheEmployeeLiability /
+    (lastSalary * sen * (1 - section14Rate));
+  return actuarialFactor;
+}
 
-  let onGoingServiceCost = person.salary * 1 * (1 - person.section14Rate);
+export function onGoingServiceCost(lastSalary, partOfYear, section14Rate) {
+  const onGoingServiceCost = lastSalary * partOfYear * (1 - section14Rate);
+
   return onGoingServiceCost;
 }
 
-export function calculation1(person) {}
+export function calculation1(person, result) {
+  let diff = 0;
+
+  const presentValueOfTheEmployeeLiability = result;
+  const lastSalary = person.salary;
+  let sen = Math.floor(seniority(person.startDate, person.leaveDate));
+  let section14Rate = person.section14Rate;
+
+  if (person.section14Date) {
+    diff = section14RateDifference(person.startDate, person.section14Date);
+    if (diff !== 0) {
+      sen = diff;
+      section14Rate = 0;
+    }
+  }
+
+  // console.log("presentValueOfTheEmployeeLiability", result);
+  // console.log("lastSalary: ", person.salary);
+  // console.log("section14Rate: ", section14Rate);
+  // console.log("sen: ", sen);
+  // console.log(
+  //   "actuarialFactor:",
+  //   actuarialFactor(
+  //     presentValueOfTheEmployeeLiability,
+  //     person.salary,
+  //     sen,
+  //     section14Rate
+  //   )
+  // );
+
+  let calculation1 =
+    onGoingServiceCost(lastSalary, 1, section14Rate) *
+    actuarialFactor(
+      presentValueOfTheEmployeeLiability,
+      person.salary,
+      sen,
+      section14Rate
+    );
+
+  return calculation1;
+}
 export function calculation2(person) {}
 export function calculation3(person) {}
 export function calculation4(person) {}

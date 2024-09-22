@@ -1,6 +1,7 @@
 import React from "react";
 import {
   calcAge,
+  calculation1,
   formatDate,
   lineFive,
   lineFour1,
@@ -26,11 +27,11 @@ import * as XLSX from "xlsx";
 //         section14Date: formatDate(row["תאריך  קבלת סעיף 14"]),
 //         section14Rate: (row["אחוז סעיף 14"] ?? 0) / 100,
 //         assetsValue: parseFloat(row["שווי נכס"]?.replace(/,/g, "")) ?? 0,
-//         leavingReason: row["סיבת עזיבה"],
-//         check: row["השלמה בצ'ק"],
-//         assetsPayment: row["תשלום מהנכס"],
-//         leaveDate: formatDate(row["תאריך עזיבה"] ?? "31/12/23"),
 //         deposits: row["הפקדות"],
+//         leaveDate: formatDate(row["תאריך עזיבה"] ?? "31/12/23"),
+//         assetsPayment: row["תשלום מהנכס"],
+//         check: row["השלמה בצ'ק"] ?? 0,
+//         leavingReason: row["סיבת עזיבה"],
 //       };
 //       const firstConnected = Number(lineOne(person));
 //       const secondConnected = Number(lineTwo1(person));
@@ -174,7 +175,7 @@ const Formulas = ({ data }) => {
       section14Date: formatDate(firstPerson["תאריך  קבלת סעיף 14"]),
       section14Rate: (firstPerson["אחוז סעיף 14"] ?? 0) / 100,
       assetsValue: parseFloat(firstPerson["שווי נכס"]?.replace(/,/g, "")) ?? 0,
-      deposits: firstPerson["הפקדות"],
+      deposits: firstPerson["הפקדות"] ?? 0,
       leaveDate: formatDate(firstPerson["תאריך עזיבה"] ?? "31/12/23"),
       assetsPayment: firstPerson["תשלום מהנכס"],
       check: firstPerson["השלמה בצ'ק"] ?? 0,
@@ -222,7 +223,8 @@ const Formulas = ({ data }) => {
     console.log("Leaving Reason: ", person.leavingReason);
     console.log("sum: ", result.toFixed(0));
 
-    console.log("onGoingServiceCost", onGoingServiceCost(person));
+    const firstCalculation = calculation1(person, result.toFixed(0));
+    console.log("firstCalculation: ", firstCalculation);
   }
 };
 

@@ -167,7 +167,7 @@ import { openingBalances } from "../data/openingBalances";
 
 const Formulas = ({ data }) => {
   if (data.length > 0) {
-    const firstPerson = data[2];
+    const firstPerson = data[1];
     // const openingBalance = openingBalances[2].commitment;
     // const assets = openingBalances[2].assets;
     // console.log("openingBalance:", openingBalance);
@@ -191,8 +191,8 @@ const Formulas = ({ data }) => {
       leavingReason: firstPerson["סיבת עזיבה"] || null,
 
       // Part - 2
-      openingBalance: openingBalances[2]?.commitment,
-      assets: openingBalances[2]?.assets,
+      openingBalance: openingBalances[1]?.commitment,
+      assets: openingBalances[1]?.assets,
     };
 
     const firstConnected = Number(lineOne(person));
@@ -220,21 +220,21 @@ const Formulas = ({ data }) => {
       part1Result *= 1.15;
     }
     console.log("Person Details:");
-    console.log("First Name: ", person.firstName);
-    console.log("Last Name: ", person.lastName);
-    console.log("Gender: ", person.gender);
-    console.log("Birth Date: ", person.birthDate);
-    console.log("Start Date: ", person.startDate);
-    console.log("Salary: ", person.salary);
-    console.log("Section 14 Date: ", person.section14Date);
-    console.log("Section 14 Rate: ", person.section14Rate);
-    console.log("Assets Value: ", person.assetsValue);
-    console.log("Deposits: ", person.deposits);
-    console.log("Leave Date: ", person.leaveDate);
-    console.log("Assets Payment: ", person.assetsPayment);
-    console.log("Check: ", person.check);
-    console.log("Leaving Reason: ", person.leavingReason);
-    console.log("sum: ", part1Result.toFixed(0));
+    // console.log("First Name: ", person.firstName);
+    // console.log("Last Name: ", person.lastName);
+    // console.log("Gender: ", person.gender);
+    // console.log("Birth Date: ", person.birthDate);
+    // console.log("Start Date: ", person.startDate);
+    // console.log("Salary: ", person.salary);
+    // console.log("Section 14 Date: ", person.section14Date);
+    // console.log("Section 14 Rate: ", person.section14Rate);
+    // console.log("Assets Value: ", person.assetsValue);
+    // console.log("Deposits: ", person.deposits);
+    // console.log("Leave Date: ", person.leaveDate);
+    // console.log("Assets Payment: ", person.assetsPayment);
+    // console.log("Check: ", person.check);
+    // console.log("Leaving Reason: ", person.leavingReason);
+    // console.log("sum: ", part1Result.toFixed(0));
 
     //// Part - 2 ////
     // console.log("Opening Balance: ", person.openingBalance);

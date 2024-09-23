@@ -32,29 +32,6 @@ export function calcAge(birthDate) {
   return Number(2023 - getYearFromDate(birthDate));
 }
 
-// export function section14(year, person) {
-//   if (person.section14Date) {
-//     if (Number(year) < Number(getYearFromDate(person.section14Date))) {
-//       return 0;
-//     } else {
-//       return person.section14Rate;
-//     }
-//   } else {
-//     return 0;
-//   }
-// }
-
-// export function seniority(startDate, leaveDate) {
-//   const start = getDateFromString(startDate);
-//   const leave = getDateFromString(leaveDate);
-
-//   const diffTime = Math.abs(start - leave);
-//   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-//   const years = diffDays / 365.25; // Using 365.25 to account for leap years
-//   return Number(years.toFixed(1));
-// }
-
 export function seniority(startDate, leaveDate) {
   const startYear = getYearFromDate(startDate);
   const leaveYear = leaveDate ? getYearFromDate(leaveDate) : 2023;
@@ -300,7 +277,7 @@ export function lineFive(person) {
   return sum;
 }
 
-//// Part - 2
+//// Part - 2 ////
 
 export function actuarialFactor(
   presentValueOfTheEmployeeLiability,
@@ -339,10 +316,10 @@ export function benefitsPaid(assetsPayment, completionByCheck) {
   return assetsPayment + completionByCheck;
 }
 
-export function calculation1(person, result) {
+export function calculation1(person, part1Result) {
   let diff = 0;
 
-  const presentValueOfTheEmployeeLiability = result;
+  const presentValueOfTheEmployeeLiability = part1Result;
   const lastSalary = person.salary;
   let sen = Math.floor(seniority(person.startDate, person.leaveDate));
   let section14Rate = person.section14Rate;
@@ -355,32 +332,25 @@ export function calculation1(person, result) {
     }
   }
 
-  // console.log("presentValueOfTheEmployeeLiability", result);
-  // console.log("lastSalary: ", person.salary);
-  // console.log("section14Rate: ", section14Rate);
-  // console.log("sen: ", sen);
+  const ongoingServiceCost = onGoingServiceCost(lastSalary, 1, section14Rate);
+  const actuarialFactorValue = actuarialFactor(
+    presentValueOfTheEmployeeLiability,
+    person.salary,
+    sen,
+    section14Rate
+  );
+
   // console.log(
-  //   "actuarialFactor:",
-  //   actuarialFactor(
-  //     presentValueOfTheEmployeeLiability,
-  //     person.salary,
-  //     sen,
-  //     section14Rate
-  //   )
+  //   `Calculation1 = onGoingServiceCost(${lastSalary}, 1, ${section14Rate}) * actuarialFactor(${presentValueOfTheEmployeeLiability}, ${person.salary}, ${sen}, ${section14Rate})`
   // );
 
-  let calculation1 =
-    onGoingServiceCost(lastSalary, 1, section14Rate) *
-    actuarialFactor(
-      presentValueOfTheEmployeeLiability,
-      person.salary,
-      sen,
-      section14Rate
-    );
+  const calculation1 = ongoingServiceCost * actuarialFactorValue;
 
   return calculation1;
 }
-export function calculation2(person, result) {
+
+export function calculation2(person, part1Result) {
+  let calcBenefitsPaid = 0;
   const openingBalance = person.openingBalance;
   const gender = person.gender;
   const startAge = calcAge(person.birthDate);
@@ -393,27 +363,52 @@ export function calculation2(person, result) {
     gender,
     retirement
   );
-
   const serviceLifeDiscountRate = discountRate(expectedServiceLife);
-  const calcBenefitsPaid = benefitsPaid(assetsPayment, completionByCheck);
+
+  if (person.leavingReason) {
+    calcBenefitsPaid = benefitsPaid(assetsPayment, completionByCheck);
+  }
+
+  const calc1Result = calculation1(person, part1Result);
+
+  // console.log(
+  //   `CapitalizationCost = ${openingBalance} * ${serviceLifeDiscountRate} + ((${calc1Result} - ${calcBenefitsPaid}) * ${serviceLifeDiscountRate}) / 2`
+  // );
 
   const capitalizationCost =
     openingBalance * serviceLifeDiscountRate +
-    ((calculation1(person, result) - calcBenefitsPaid) *
-      serviceLifeDiscountRate) /
-      2;
-
-  console.log(serviceLifeDiscountRate);
-  console.log(calcBenefitsPaid);
-  console.log(openingBalance);
-  console.log(calculation1(person, result).toFixed());
-  console.log(calcBenefitsPaid);
-  console.log(serviceLifeDiscountRate);
-  console.log(capitalizationCost);
+    ((calc1Result - calcBenefitsPaid) * serviceLifeDiscountRate) / 2;
 
   return capitalizationCost;
 }
 
-export function calculation3(person) {}
+export function calculation3(person, part1Result) {
+  let calcBenefitsPaid = 0;
+  const closingBalance = part1Result;
+  const openingBalance = person.openingBalance;
+  const assetsPayment = person.assetsPayment;
+  const completionByCheck = person.check;
+
+  const ongoingServiceCost = calculation1(person, part1Result);
+  const capitalizationCost = calculation2(person, part1Result);
+
+  if (person.leavingReason) {
+    calcBenefitsPaid = benefitsPaid(assetsPayment, completionByCheck);
+  }
+
+  // console.log(
+  //   `Calculation3 = ${closingBalance} - ${openingBalance} - ${ongoingServiceCost} - ${capitalizationCost} + ${calcBenefitsPaid}`
+  // );
+
+  const calculation3 =
+    closingBalance -
+    openingBalance -
+    ongoingServiceCost -
+    capitalizationCost +
+    calcBenefitsPaid;
+
+  return calculation3;
+}
+
 export function calculation4(person) {}
 export function calculation5(person) {}

@@ -246,10 +246,14 @@ const Formulas = ({ data }) => {
     );
     const secondCalculation = Number(calculation2(person, part1Result));
     const thirdCalculation = Number(calculation3(person, part1Result));
+    const fourthCalculation = Number(calculation3(person));
+    const fifthCalculation = Number(calculation3(person));
 
     console.log("firstCalculation: ", firstCalculation.toFixed());
     console.log("secondCalculation: ", secondCalculation.toFixed());
     console.log("thirdCalculation: ", thirdCalculation.toFixed());
+    console.log("fourthCalculation: ", fourthCalculation.toFixed());
+    console.log("fifthCalculation: ", fifthCalculation.toFixed());
   }
 };
 

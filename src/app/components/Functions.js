@@ -279,6 +279,7 @@ export function lineFive(person) {
 
 //// Part - 2 ////
 
+//פקטור אקטוארי
 export function actuarialFactor(
   presentValueOfTheEmployeeLiability,
   lastSalary,
@@ -293,12 +294,14 @@ export function actuarialFactor(
   return actuarialFactor;
 }
 
+//עלות שירות שוטף
 export function onGoingServiceCost(lastSalary, partOfYear, section14Rate) {
   const onGoingServiceCost = lastSalary * partOfYear * (1 - section14Rate);
 
   return onGoingServiceCost;
 }
 
+//חישוב חלק שעובד עבד
 export function calculateServiceLife(startAge, gender, retirement) {
   let serviceLife = 0;
   let cumulativeProbability = 1;
@@ -312,6 +315,7 @@ export function calculateServiceLife(startAge, gender, retirement) {
   return Number(serviceLife.toFixed());
 }
 
+//פיצויים ששולמו
 export function benefitsPaid(assetsPayment, completionByCheck) {
   return assetsPayment + completionByCheck;
 }
@@ -357,6 +361,8 @@ export function calculation2(person, part1Result) {
   const retirement = person.gender === "M" ? 67 : 64;
   const assetsPayment = person.assetsPayment;
   const completionByCheck = person.check;
+
+  const changeOfCommitment = person.commitment;
 
   const expectedServiceLife = calculateServiceLife(
     startAge,
@@ -410,5 +416,44 @@ export function calculation3(person, part1Result) {
   return calculation3;
 }
 
-export function calculation4(person) {}
-export function calculation5(person) {}
+export function calculation4(person) {
+  const openingBalance = person.assets;
+  const gender = person.gender;
+  const startAge = calcAge(person.birthDate);
+  const retirement = person.gender === "M" ? 67 : 64;
+
+  const expectedServiceLife = calculateServiceLife(
+    startAge,
+    gender,
+    retirement
+  );
+  const serviceLifeDiscountRate = discountRate(expectedServiceLife);
+
+  // const expectedReturnOnPlanAssets =
+  //   openingBalance * serviceLifeDiscountRate +
+  //   ((person.deposits - person.assetsPayment + person.check) *
+  //     serviceLifeDiscountRate) /
+  //     2;
+  return (
+    openingBalance * serviceLifeDiscountRate +
+    ((person.deposits - person.assetsPayment + person.check) *
+      serviceLifeDiscountRate) /
+      2
+  );
+}
+
+export function calculation5(person) {
+  const assetsValueClosedRate = 0; //to check
+  const benefitsPaid = person.assetsPayment;
+  const expectedReturn = calculation4(person);
+  const deposits = person.deposits;
+  const assetsValue = person.assetsValue;
+
+  return (
+    assetsValueClosedRate -
+    expectedReturn -
+    deposits -
+    assetsValue +
+    benefitsPaid
+  );
+}

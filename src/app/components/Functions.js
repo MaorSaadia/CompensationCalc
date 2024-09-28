@@ -443,7 +443,7 @@ export function calculation4(person) {
 }
 
 export function calculation5(person) {
-  const assetsValueClosedRate = 0; //to check
+  const assetsValueClosedRate = person.assetsValue + person.check; //to check
   const benefitsPaid = person.assetsPayment;
   const expectedReturn = calculation4(person);
   const deposits = person.deposits;

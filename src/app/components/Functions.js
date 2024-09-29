@@ -402,9 +402,9 @@ export function calculation3(person, part1Result) {
     calcBenefitsPaid = benefitsPaid(assetsPayment, completionByCheck);
   }
 
-  // console.log(
-  //   `Calculation3 = ${closingBalance} - ${openingBalance} - ${ongoingServiceCost} - ${capitalizationCost} + ${calcBenefitsPaid}`
-  // );
+  console.log(
+    `Calculation3 = ${closingBalance} - ${openingBalance} - ${ongoingServiceCost} - ${capitalizationCost} + ${calcBenefitsPaid}`
+  );
 
   const calculation3 =
     closingBalance -
@@ -417,10 +417,14 @@ export function calculation3(person, part1Result) {
 }
 
 export function calculation4(person) {
+  let calcBenefitsPaid = 0;
   const openingBalance = person.assets;
   const gender = person.gender;
   const startAge = calcAge(person.birthDate);
   const retirement = person.gender === "M" ? 67 : 64;
+  const deposits = person.deposits;
+  const assetsPayment = person.assetsPayment;
+  const completionByCheck = person.check;
 
   const expectedServiceLife = calculateServiceLife(
     startAge,
@@ -429,31 +433,39 @@ export function calculation4(person) {
   );
   const serviceLifeDiscountRate = discountRate(expectedServiceLife);
 
-  // const expectedReturnOnPlanAssets =
-  //   openingBalance * serviceLifeDiscountRate +
-  //   ((person.deposits - person.assetsPayment + person.check) *
-  //     serviceLifeDiscountRate) /
-  //     2;
+  if (person.leavingReason) {
+    calcBenefitsPaid = benefitsPaid(assetsPayment, completionByCheck);
+  }
+
+  // console.log(
+  //   `ExpectedReturnOnPlanAssets = ${openingBalance} * ${serviceLifeDiscountRate} + ((${deposits} - ${calcBenefitsPaid}) * ${serviceLifeDiscountRate}) / 2`
+  // );
+
   return (
     openingBalance * serviceLifeDiscountRate +
-    ((person.deposits - person.assetsPayment + person.check) *
-      serviceLifeDiscountRate) /
-      2
+    ((deposits - calcBenefitsPaid) * serviceLifeDiscountRate) / 2
   );
 }
 
 export function calculation5(person) {
-  const assetsValueClosedRate = person.assetsValue + person.check; //to check
-  const benefitsPaid = person.assetsPayment;
+  let calcBenefitsPaid = 0;
+
+  const assetsValue = person.assetsValue;
+  const openingBalance = person.assets;
   const expectedReturn = calculation4(person);
   const deposits = person.deposits;
-  const assetsValue = person.assetsValue;
+  const assetsPayment = person.assetsPayment;
+  const completionByCheck = person.check;
+
+  if (person.leavingReason) {
+    calcBenefitsPaid = benefitsPaid(assetsPayment, completionByCheck);
+  }
+
+  console.log(
+    `Calculation5 = ${assetsValue} - ${openingBalance} - ${expectedReturn} - ${deposits} + ${calcBenefitsPaid}`
+  );
 
   return (
-    assetsValueClosedRate -
-    expectedReturn -
-    deposits -
-    assetsValue +
-    benefitsPaid
+    assetsValue - openingBalance - expectedReturn - deposits + calcBenefitsPaid
   );
 }

@@ -461,9 +461,9 @@ export function calculation5(person) {
     calcBenefitsPaid = benefitsPaid(assetsPayment, completionByCheck);
   }
 
-  console.log(
-    `Calculation5 = ${assetsValue} - ${openingBalance} - ${expectedReturn} - ${deposits} + ${calcBenefitsPaid}`
-  );
+  // console.log(
+  //   `Calculation5 = ${assetsValue} - ${openingBalance} - ${expectedReturn} - ${deposits} + ${calcBenefitsPaid}`
+  // );
 
   return (
     assetsValue - openingBalance - expectedReturn - deposits + calcBenefitsPaid

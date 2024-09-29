@@ -279,7 +279,7 @@ export function lineFive(person) {
 
 //// Part - 2 ////
 
-//פקטור אקטוארי
+// פקטור אקטוארי
 export function actuarialFactor(
   presentValueOfTheEmployeeLiability,
   lastSalary,
@@ -294,14 +294,14 @@ export function actuarialFactor(
   return actuarialFactor;
 }
 
-//עלות שירות שוטף
+// עלות שירות שוטף
 export function onGoingServiceCost(lastSalary, partOfYear, section14Rate) {
   const onGoingServiceCost = lastSalary * partOfYear * (1 - section14Rate);
 
   return onGoingServiceCost;
 }
 
-//חישוב חלק שעובד עבד
+// חישוב חלק שעובד עבד
 export function calculateServiceLife(startAge, gender, retirement) {
   let serviceLife = 0;
   let cumulativeProbability = 1;
@@ -315,7 +315,7 @@ export function calculateServiceLife(startAge, gender, retirement) {
   return Number(serviceLife.toFixed());
 }
 
-//פיצויים ששולמו
+// פיצויים ששולמו
 export function benefitsPaid(assetsPayment, completionByCheck) {
   return assetsPayment + completionByCheck;
 }
@@ -361,8 +361,6 @@ export function calculation2(person, part1Result) {
   const retirement = person.gender === "M" ? 67 : 64;
   const assetsPayment = person.assetsPayment;
   const completionByCheck = person.check;
-
-  const changeOfCommitment = person.commitment;
 
   const expectedServiceLife = calculateServiceLife(
     startAge,

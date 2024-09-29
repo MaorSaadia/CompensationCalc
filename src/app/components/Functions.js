@@ -402,9 +402,9 @@ export function calculation3(person, part1Result) {
     calcBenefitsPaid = benefitsPaid(assetsPayment, completionByCheck);
   }
 
-  console.log(
-    `Calculation3 = ${closingBalance} - ${openingBalance} - ${ongoingServiceCost} - ${capitalizationCost} + ${calcBenefitsPaid}`
-  );
+  // console.log(
+  //   `Calculation3 = ${closingBalance} - ${openingBalance} - ${ongoingServiceCost} - ${capitalizationCost} + ${calcBenefitsPaid}`
+  // );
 
   const calculation3 =
     closingBalance -

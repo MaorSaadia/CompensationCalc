@@ -1,48 +1,86 @@
+/* eslint-disable react/no-unescaped-entities */
 import React from "react";
 import {
-  calcAge,
-  calculateServiceLife,
   calculation1,
   calculation2,
   calculation3,
   calculation4,
   calculation5,
   formatDate,
-  lineFive,
-  lineFour1,
-  lineFour2,
   lineOne,
-  lineThree,
   lineTwo1,
   lineTwo2,
-  onGoingServiceCost,
+  lineThree,
+  lineFour1,
+  lineFour2,
+  lineFive,
+  benefitsPaid,
 } from "./Functions";
-import * as XLSX from "xlsx";
 import { openingBalances } from "../data/openingBalances";
+import * as XLSX from "xlsx";
 
 const Formulas = ({ data }) => {
   const handleExport = () => {
-    const exportData = data.map((row, index) => {
+    // Create workbook and worksheets
+    const wb = XLSX.utils.book_new();
+    const ws1 = XLSX.utils.aoa_to_sheet([]);
+    const ws2 = XLSX.utils.aoa_to_sheet([]);
+
+    // Headers for the first table
+    XLSX.utils.sheet_add_aoa(
+      ws1,
+      [
+        [
+          "מס עובד",
+          "שווי התחייבות-יתרת פתיחה",
+          "עלות שירות שוטף",
+          "עלות היוון",
+          "סך ההטבות ששולמו מהנכס+תשלום בצ'ק",
+          "שווי התחייבות-יתרת סגירה",
+          "הפסד/(רווח)אקטוארי",
+        ],
+      ],
+      { origin: "A1" }
+    );
+
+    // Headers for the second table
+    XLSX.utils.sheet_add_aoa(
+      ws2,
+      [
+        [
+          "מס עובד",
+          "שווי הנכסים - יתרת פתיחה",
+          "הפקדות",
+          "תשואה צפויה על נכסי התוכנית",
+          "הטבות ששולמו מנכסי התוכנית",
+          "שווי הנכסים - יתרת סגירה",
+          "הפסד/(רווח)אקטוארי",
+        ],
+      ],
+      { origin: "A1" }
+    );
+
+    // Populate data for both tables
+    data.forEach((row, index) => {
       const person = {
         firstName: row["שם"],
         lastName: row["שם משפחה"],
         gender: row["מין"],
         birthDate: formatDate(row["תאריך לידה"]),
         startDate: formatDate(row["תאריך תחילת עבודה"]),
-        salary: parseFloat(row["שכר"]?.replace(/,/g, "")),
+        salary: parseFloat(row["שכר"]?.replace(/,/g, "") || 0),
         section14Date: formatDate(row["תאריך  קבלת סעיף 14"]),
         section14Rate: (row["אחוז סעיף 14"] ?? 0) / 100,
-        assetsValue: parseFloat(row["שווי נכס"]?.replace(/,/g, "")) ?? 0,
-        deposits: parseFloat(row["הפקדות"]?.replace(/,/g, "")) ?? 0,
+        assetsValue: parseFloat(row["שווי נכס"]?.replace(/,/g, "")) || 0,
+        deposits: parseFloat(row["הפקדות"]?.replace(/,/g, "")) || 0,
         leaveDate: formatDate(row["תאריך עזיבה"] ?? "31/12/23"),
-        assetsPayment: parseFloat(row["תשלום מהנכס"]?.replace(/,/g, "")) ?? 0,
+        assetsPayment: parseFloat(row["תשלום מהנכס"]?.replace(/,/g, "")) || 0,
         check: parseFloat(row["השלמה בצ'ק"]?.replace(/,/g, "")) || 0,
         leavingReason: row["סיבת עזיבה"] || null,
-
-        // Part - 2
         openingBalance: openingBalances[index]?.commitment,
         assets: openingBalances[index]?.assets,
       };
+
       const firstConnected = Number(lineOne(person));
       const secondConnected = Number(lineTwo1(person));
       const thirdConnected = Number(lineTwo2(person));
@@ -50,6 +88,7 @@ const Formulas = ({ data }) => {
       const fiveConnected = Number(lineFour1(person));
       const sixConnected = Number(lineFour2(person));
       const sevenConnected = Number(lineFive(person));
+
       let part1Result =
         firstConnected +
         secondConnected +
@@ -66,19 +105,76 @@ const Formulas = ({ data }) => {
       ) {
         part1Result *= 1.15;
       }
-      return {
-        Id: index + 1,
-        "שם מלא": `${person.firstName} ${person.lastName}`,
-        גיל: calcAge(person.birthDate),
-        "סכום הפיצוי": `${part1Result.toFixed(0)}`,
-      };
+
+      let calcBenefitsPaid = 0;
+      const assetsPayment = person.assetsPayment;
+      const completionByCheck = person.check;
+
+      const firstCalculation = Number(
+        calculation1(person, part1Result.toFixed(0))
+      );
+      const secondCalculation = Number(calculation2(person, part1Result));
+      const thirdCalculation = Number(calculation3(person, part1Result));
+      const fourthCalculation = Number(calculation4(person));
+      const fifthCalculation = Number(calculation5(person));
+      if (person.leavingReason) {
+        calcBenefitsPaid = benefitsPaid(assetsPayment, completionByCheck);
+      }
+
+      // Add row to the first table
+      XLSX.utils.sheet_add_aoa(
+        ws1,
+        [
+          [
+            index + 1,
+            person.openingBalance,
+            firstCalculation.toFixed(),
+            secondCalculation.toFixed(),
+            calcBenefitsPaid,
+            part1Result.toFixed(),
+            thirdCalculation.toFixed(),
+          ],
+        ],
+        { origin: -1 }
+      );
+
+      // Add row to the second table
+      XLSX.utils.sheet_add_aoa(
+        ws2,
+        [
+          [
+            index + 1,
+            person.assets,
+            person.deposits,
+            fourthCalculation.toFixed(),
+            calcBenefitsPaid,
+            person.assetsValue,
+            fifthCalculation.toFixed(),
+          ],
+        ],
+        { origin: -1 }
+      );
     });
 
-    const worksheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "CompensationAmount.xlsx");
+    // Add the worksheets to the workbook
+    XLSX.utils.book_append_sheet(wb, ws1, "Table 1");
+    XLSX.utils.book_append_sheet(wb, ws2, "Table 2");
+
+    // Generate Excel file and trigger download
+    XLSX.writeFile(wb, "compensation_tables.xlsx");
   };
+
+  const TableHeader = ({ children }) => (
+    <th className="py-3 px-6 text-right bg-gray-200 border text-gray-600 text-sm leading-normal">
+      {children}
+    </th>
+  );
+
+  const TableCell = ({ children }) => (
+    <td className="py-3 px-6 text-right border whitespace-nowrap">
+      {children}
+    </td>
+  );
 
   return (
     <div className="p-1">
@@ -92,196 +188,194 @@ const Formulas = ({ data }) => {
           </button>
         </div>
       )}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border rounded-lg shadow-md my-4">
+          <thead>
+            <tr>
+              <TableHeader>מס עובד</TableHeader>
+              <TableHeader>שווי התחייבות-יתרת פתיחה</TableHeader>
+              <TableHeader>עלות שירות שוטף</TableHeader>
+              <TableHeader>עלות היוון</TableHeader>
+              <TableHeader>סך ההטבות ששולמו מהנכס+תשלום בצ'ק</TableHeader>
+              <TableHeader>שווי התחייבות-יתרת סגירה</TableHeader>
+              <TableHeader>הפסד/(רווח)אקטוארי</TableHeader>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, index) => {
+              const person = {
+                firstName: row["שם"],
+                lastName: row["שם משפחה"],
+                gender: row["מין"],
+                birthDate: formatDate(row["תאריך לידה"]),
+                startDate: formatDate(row["תאריך תחילת עבודה"]),
+                salary: parseFloat(row["שכר"]?.replace(/,/g, "") || 0),
+                section14Date: formatDate(row["תאריך  קבלת סעיף 14"]),
+                section14Rate: (row["אחוז סעיף 14"] ?? 0) / 100,
+                assetsValue:
+                  parseFloat(row["שווי נכס"]?.replace(/,/g, "")) || 0,
+                deposits: parseFloat(row["הפקדות"]?.replace(/,/g, "")) || 0,
+                leaveDate: formatDate(row["תאריך עזיבה"] ?? "31/12/23"),
+                assetsPayment:
+                  parseFloat(row["תשלום מהנכס"]?.replace(/,/g, "")) || 0,
+                check: parseFloat(row["השלמה בצ'ק"]?.replace(/,/g, "")) || 0,
+                leavingReason: row["סיבת עזיבה"] || null,
+                openingBalance: openingBalances[index]?.commitment,
+                assets: openingBalances[index]?.assets,
+              };
 
-      <table className="min-w-full bg-white border rounded-lg shadow-md my-4">
-        <thead>
-          <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-            <th className="py-3 px-6 text-center text-lg">סכום הפיצוי</th>
-            <th className="py-3 px-6 text-center text-lg">גיל</th>
-            <th className="py-3 px-6 text-center text-lg">שם מלא</th>
-            <th className="py-3 px-6 text-center text-lg"></th>
-          </tr>
-        </thead>
-        <tbody className="text-gray-600 text-sm font-light">
-          {data.map((row, index) => {
-            const person = {
-              firstName: row["שם"],
-              lastName: row["שם משפחה"],
-              gender: row["מין"],
-              birthDate: formatDate(row["תאריך לידה"]),
-              startDate: formatDate(row["תאריך תחילת עבודה"]),
-              salary: parseFloat(row["שכר"]?.replace(/,/g, "")),
-              section14Date: formatDate(row["תאריך  קבלת סעיף 14"]),
-              section14Rate: (row["אחוז סעיף 14"] ?? 0) / 100,
-              assetsValue: parseFloat(row["שווי נכס"]?.replace(/,/g, "")) ?? 0,
-              deposits: parseFloat(row["הפקדות"]?.replace(/,/g, "")) ?? 0,
-              leaveDate: formatDate(row["תאריך עזיבה"] ?? "31/12/23"),
-              assetsPayment:
-                parseFloat(row["תשלום מהנכס"]?.replace(/,/g, "")) ?? 0,
-              check: parseFloat(row["השלמה בצ'ק"]?.replace(/,/g, "")) || 0,
-              leavingReason: row["סיבת עזיבה"] || null,
+              const firstConnected = Number(lineOne(person));
+              const secondConnected = Number(lineTwo1(person));
+              const thirdConnected = Number(lineTwo2(person));
+              const fourConnected = Number(lineThree(person));
+              const fiveConnected = Number(lineFour1(person));
+              const sixConnected = Number(lineFour2(person));
+              const sevenConnected = Number(lineFive(person));
 
-              // Part - 2
-              openingBalance: openingBalances[index]?.commitment,
-              assets: openingBalances[index]?.assets,
-            };
+              let part1Result =
+                firstConnected +
+                secondConnected +
+                thirdConnected +
+                fourConnected +
+                fiveConnected +
+                sixConnected +
+                sevenConnected;
 
-            const firstConnected = Number(lineOne(person));
-            const secondConnected = Number(lineTwo1(person));
-            const thirdConnected = Number(lineTwo2(person));
-            const fourConnected = Number(lineThree(person));
-            const fiveConnected = Number(lineFour1(person));
-            const sixConnected = Number(lineFour2(person));
-            const sevenConnected = Number(lineFive(person));
+              if (
+                person.leavingReason === "פרישה לגמלאות" ||
+                person.leavingReason === "פיטורין" ||
+                person.leavingReason === "מוות"
+              ) {
+                part1Result *= 1.15;
+              }
 
-            let part1Result =
-              firstConnected +
-              secondConnected +
-              thirdConnected +
-              fourConnected +
-              fiveConnected +
-              sixConnected +
-              sevenConnected;
+              let calcBenefitsPaid = 0;
+              const assetsPayment = person.assetsPayment;
+              const completionByCheck = person.check;
 
-            if (
-              person.leavingReason === "פרישה לגמלאות" ||
-              person.leavingReason === "פיטורין" ||
-              person.leavingReason === "מוות"
-            ) {
-              part1Result *= 1.15;
-            }
+              const firstCalculation = Number(
+                calculation1(person, part1Result.toFixed(0))
+              );
+              const secondCalculation = Number(
+                calculation2(person, part1Result)
+              );
+              const thirdCalculation = Number(
+                calculation3(person, part1Result)
+              );
+              if (person.leavingReason) {
+                calcBenefitsPaid = benefitsPaid(
+                  assetsPayment,
+                  completionByCheck
+                );
+              }
 
-            //// Part - 2 ////
-            const firstCalculation = Number(
-              calculation1(person, part1Result.toFixed(0))
-            );
-            const secondCalculation = Number(calculation2(person, part1Result));
-            const thirdCalculation = Number(calculation3(person, part1Result));
-            const fourthCalculation = Number(calculation4(person));
-            const fifthCalculation = Number(calculation5(person));
+              return (
+                <tr key={index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{person.openingBalance}</TableCell>
+                  <TableCell>{firstCalculation.toFixed()}</TableCell>
+                  <TableCell>{secondCalculation.toFixed()}</TableCell>
+                  <TableCell>{calcBenefitsPaid}</TableCell>
+                  <TableCell>{part1Result.toFixed()}</TableCell>
+                  <TableCell>{thirdCalculation.toFixed()}</TableCell>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
-            console.log("firstCalculation: ", firstCalculation.toFixed());
-            console.log("secondCalculation: ", secondCalculation.toFixed());
-            console.log("thirdCalculation: ", thirdCalculation.toFixed());
-            console.log("fourthCalculation: ", fourthCalculation.toFixed());
-            console.log("fifthCalculation: ", fifthCalculation.toFixed());
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border rounded-lg shadow-md my-4">
+          <thead>
+            <tr>
+              <TableHeader>מס עובד</TableHeader>
+              <TableHeader>שווי הנכסים - יתרת פתיחה</TableHeader>
+              <TableHeader>הפקדות</TableHeader>
+              <TableHeader>תשואה צפויה על נכסי התוכנית</TableHeader>
+              <TableHeader>הטבות ששולמו מנכסי התוכנית</TableHeader>
+              <TableHeader>שווי הנכסים - יתרת סגירה</TableHeader>
+              <TableHeader>הפסד/(רווח)אקטוארי</TableHeader>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, index) => {
+              const person = {
+                firstName: row["שם"],
+                lastName: row["שם משפחה"],
+                gender: row["מין"],
+                birthDate: formatDate(row["תאריך לידה"]),
+                startDate: formatDate(row["תאריך תחילת עבודה"]),
+                salary: parseFloat(row["שכר"]?.replace(/,/g, "")),
+                section14Date: formatDate(row["תאריך  קבלת סעיף 14"]),
+                section14Rate: (row["אחוז סעיף 14"] ?? 0) / 100,
+                assetsValue:
+                  parseFloat(row["שווי נכס"]?.replace(/,/g, "")) || 0,
+                deposits: parseFloat(row["הפקדות"]?.replace(/,/g, "")) || 0,
+                leaveDate: formatDate(row["תאריך עזיבה"] ?? "31/12/23"),
+                assetsPayment:
+                  parseFloat(row["תשלום מהנכס"]?.replace(/,/g, "")) || 0,
+                check: parseFloat(row["השלמה בצ'ק"]?.replace(/,/g, "")) || 0,
+                leavingReason: row["סיבת עזיבה"] || null,
+                openingBalance: openingBalances[index]?.commitment,
+                assets: openingBalances[index]?.assets,
+              };
 
-            return (
-              <tr
-                key={index}
-                className="border-b border-gray-200 hover:bg-gray-100"
-              >
-                <td className="py-3 px-6 text-center whitespace-nowrap">
-                  {part1Result.toFixed(0)}₪
-                </td>
-                <td className="py-3 px-6 text-center whitespace-nowrap">
-                  {calcAge(person.birthDate)}
-                </td>
-                <td className="py-3 px-6 text-center whitespace-nowrap">
-                  {person.firstName} {person.lastName}
-                </td>
-                <td className="py-3 px-6 text-center whitespace-nowrap">
-                  {index + 1}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+              const firstConnected = Number(lineOne(person));
+              const secondConnected = Number(lineTwo1(person));
+              const thirdConnected = Number(lineTwo2(person));
+              const fourConnected = Number(lineThree(person));
+              const fiveConnected = Number(lineFour1(person));
+              const sixConnected = Number(lineFour2(person));
+              const sevenConnected = Number(lineFive(person));
+
+              let part1Result =
+                firstConnected +
+                secondConnected +
+                thirdConnected +
+                fourConnected +
+                fiveConnected +
+                sixConnected +
+                sevenConnected;
+
+              if (
+                person.leavingReason === "פרישה לגמלאות" ||
+                person.leavingReason === "פיטורין" ||
+                person.leavingReason === "מוות"
+              ) {
+                part1Result *= 1.15;
+              }
+              let calcBenefitsPaid = 0;
+              const assetsPayment = person.assetsPayment;
+              const completionByCheck = person.check;
+
+              if (person.leavingReason) {
+                calcBenefitsPaid = benefitsPaid(
+                  assetsPayment,
+                  completionByCheck
+                );
+              }
+
+              const fourthCalculation = Number(calculation4(person));
+              const fifthCalculation = Number(calculation5(person));
+
+              return (
+                <tr key={index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{person.assets}</TableCell>
+                  <TableCell>{person.deposits}</TableCell>
+                  <TableCell>{fourthCalculation.toFixed()}</TableCell>
+                  <TableCell>{calcBenefitsPaid}</TableCell>
+                  <TableCell>{person.assetsValue}</TableCell>
+                  <TableCell>{fifthCalculation.toFixed()}</TableCell>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
-
-// const Formulas = ({ data }) => {
-//   if (data.length > 0) {
-//     const firstPerson = data[2];
-//     // const openingBalance = openingBalances[2].commitment;
-//     // const assets = openingBalances[2].assets;
-//     // console.log("openingBalance:", openingBalance);
-//     // console.log("assets:", assets);
-
-//     const person = {
-//       firstName: firstPerson["שם"],
-//       lastName: firstPerson["שם משפחה"],
-//       gender: firstPerson["מין"],
-//       birthDate: formatDate(firstPerson["תאריך לידה"]),
-//       startDate: formatDate(firstPerson["תאריך תחילת עבודה"]),
-//       salary: parseFloat(firstPerson["שכר"]?.replace(/,/g, "")),
-//       section14Date: formatDate(firstPerson["תאריך  קבלת סעיף 14"]),
-//       section14Rate: (firstPerson["אחוז סעיף 14"] ?? 0) / 100,
-//       assetsValue: parseFloat(firstPerson["שווי נכס"]?.replace(/,/g, "")) ?? 0,
-//       deposits: parseFloat(firstPerson["הפקדות"]?.replace(/,/g, "")) ?? 0,
-//       leaveDate: formatDate(firstPerson["תאריך עזיבה"] ?? "31/12/23"),
-//       assetsPayment:
-//         parseFloat(firstPerson["תשלום מהנכס"]?.replace(/,/g, "")) ?? 0,
-//       check: parseFloat(firstPerson["השלמה בצ'ק"]?.replace(/,/g, "")) || 0,
-//       leavingReason: firstPerson["סיבת עזיבה"] || null,
-
-//       // Part - 2
-//       openingBalance: openingBalances[2]?.commitment,
-//       assets: openingBalances[2]?.assets,
-//     };
-
-//     const firstConnected = Number(lineOne(person));
-//     const secondConnected = Number(lineTwo1(person));
-//     const thirdConnected = Number(lineTwo2(person));
-//     const fourConnected = Number(lineThree(person));
-//     const fiveConnected = Number(lineFour1(person));
-//     const sixConnected = Number(lineFour2(person));
-//     const sevenConnected = Number(lineFive(person));
-
-//     let part1Result =
-//       firstConnected +
-//       secondConnected +
-//       thirdConnected +
-//       fourConnected +
-//       fiveConnected +
-//       sixConnected +
-//       sevenConnected;
-
-//     if (
-//       person.leavingReason === "פרישה לגמלאות" ||
-//       person.leavingReason === "פיטורין" ||
-//       person.leavingReason === "מוות"
-//     ) {
-//       part1Result *= 1.15;
-//     }
-//     // console.log("Person Details:");
-//     // console.log("First Name: ", person.firstName);
-//     // console.log("Last Name: ", person.lastName);
-//     // console.log("Gender: ", person.gender);
-//     // console.log("Birth Date: ", person.birthDate);
-//     // console.log("Start Date: ", person.startDate);
-//     // console.log("Salary: ", person.salary);
-//     // console.log("Section 14 Date: ", person.section14Date);
-//     // console.log("Section 14 Rate: ", person.section14Rate);
-//     // console.log("Assets Value: ", person.assetsValue);
-//     // console.log("Deposits: ", person.deposits);
-//     // console.log("Leave Date: ", person.leaveDate);
-//     // console.log("Assets Payment: ", person.assetsPayment);
-//     // console.log("Check: ", person.check);
-//     // console.log("Leaving Reason: ", person.leavingReason);
-//     // console.log("sum: ", part1Result.toFixed(0));
-
-//     //// Part - 2 ////
-//     console.log("Opening Balance: ", person.openingBalance);
-//     console.log("Assets: ", person.assets);
-
-//     //// Part - 2 ////
-//     const firstCalculation = Number(
-//       calculation1(person, part1Result.toFixed(0))
-//     );
-//     const secondCalculation = Number(calculation2(person, part1Result));
-//     const thirdCalculation = Number(calculation3(person, part1Result));
-//     const fourthCalculation = Number(calculation4(person));
-//     const fifthCalculation = Number(calculation5(person));
-
-//     console.log("firstCalculation: ", firstCalculation.toFixed());
-//     console.log("secondCalculation: ", secondCalculation.toFixed());
-//     console.log("thirdCalculation: ", thirdCalculation.toFixed());
-//     console.log("fourthCalculation: ", fourthCalculation.toFixed());
-//     console.log("fifthCalculation: ", fifthCalculation.toFixed());
-//   }
-// };
 
 export default Formulas;
